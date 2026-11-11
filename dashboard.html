@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard - Al-Farha Cargo</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Session & Auto-Redirect Guard -->
+  <script src="/auth-guard.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+  :root { 
+    --bg-color: #f8fafc; 
+    --card-bg: #ffffff; 
+    --border-color: #e2e8f0; 
+    --text-main: #0f172a; 
+    --text-muted: #64748b; 
+    --brand-accent: #4f46e5; 
+    --sidebar-width: 260px; 
+  }
+  
+  body, html { margin: 0; padding: 0; box-sizing: border-box; height: 100vh; overflow: hidden; }
+  *, *::before, *::after { box-sizing: inherit; }
+  
+  .app-layout { display: flex; height: 100vh; width: 100vw; font-family: 'Comfortaa', cursive; color: var(--text-main); background-color: var(--bg-color); position: relative; z-index: 1; }
+  .bg-glow { position: fixed; top: -15%; right: -10%; width: 60vw; height: 60vw; border-radius: 50%; background: radial-gradient(circle, rgba(79,70,229,0.06) 0%, rgba(248,250,252,0) 70%); z-index: -1; pointer-events: none; }
+
+  /* Sidebar */
+  .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); height: 100vh; padding: 24px 20px; display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 24px rgba(0,0,0,0.02); flex-shrink: 0; }
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding: 0 5px; }
+  .sidebar-brand { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.25rem; display: flex; align-items: center; gap: 12px; }
+  .sidebar-brand i { color: var(--brand-accent); font-size: 1.5rem; }
+  .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .nav-item { font-family: 'Lexend', sans-serif; font-size: 0.9rem; font-weight: 500; padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; color: var(--text-muted); transition: all 0.2s ease; }
+  .nav-item i { font-size: 1.2rem; min-width: 30px; }
+  .nav-item:hover { color: var(--brand-accent); background-color: #f5f3ff; transform: translateX(4px); }
+  .nav-item.active { color: var(--brand-accent); background-color: #eef2ff; font-weight: 600; }
+  .sidebar-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border-color); margin-top: auto;}
+  .user-details { display: flex; flex-direction: column; overflow: hidden; }
+  .user-name { font-weight: 600; font-size: 0.85rem; font-family: 'Lexend', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+  .user-branch { font-size: 0.7rem; color: var(--text-muted); font-family: 'Lexend', sans-serif; }
+  .btn-logout { background: transparent; border: none; color: #ef4444; font-size: 1.2rem; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; }
+  .btn-logout:hover { background: #fef2f2; transform: scale(1.1); }
+
+  /* Main Content Layout */
+  .main-content { flex: 1; display: flex; flex-direction: column; padding: 32px 4% 24px 4%; height: 100vh; overflow: hidden; }
+  
+  .top-section { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-shrink: 0; gap: 24px; animation: slideDown 0.5s ease-out; }
+  .header-titles { flex: 1; }
+  .page-title { font-family: 'Lexend', sans-serif; font-weight: 300; font-size: 2rem; letter-spacing: -0.03em; margin: 0 0 4px 0; display: flex; align-items: center; gap: 12px; }
+  .page-subtitle { color: var(--text-muted); font-size: 0.9rem; font-style: italic; opacity: 0.8; margin: 0; }
+  
+  .top-actions { display: flex; align-items: center; gap: 16px; }
+
+  /* Compact Search */
+  .compact-search { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 16px; padding: 8px 8px 8px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); min-width: 320px; position: relative;}
+  .search-input-widget { flex: 1; border: none; background: transparent; font-family: 'Lexend', sans-serif; font-size: 0.95rem; outline: none; color: var(--text-main); }
+  .btn-search-hero { background: var(--text-main); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+  .btn-search-hero:hover { background: var(--brand-accent); }
+  .search-alert { position: absolute; top: 100%; right: 0; margin-top: 8px; width: 100%; z-index: 10; font-size: 0.85rem; padding: 12px; }
+
+  /* Notification Bell (Header) */
+  .notification-wrapper { position: relative; display: flex; align-items: center; }
+  .btn-bell { background: #ffffff; border: 1px solid var(--border-color); width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .btn-bell:hover { color: var(--text-main); border-color: #cbd5e0; transform: translateY(-2px); }
+  .btn-bell.active { background: #f8fafc; border-color: #cbd5e0; color: var(--text-main); }
+  
+  .bell-badge { position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; font-size: 0.7rem; font-family: 'Lexend', sans-serif; font-weight: 700; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid #f8fafc; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4); display: none; pointer-events: none;}
+  .bell-badge.show { display: flex; animation: bell-bounce 1.5s ease infinite; }
+  @keyframes bell-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+  .notif-dropdown { position: absolute; top: calc(100% + 12px); right: 0; width: 340px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 15px 50px -10px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transform: translateY(-10px) scale(0.98); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); z-index: 50; overflow: hidden; display: flex; flex-direction: column; transform-origin: top right;}
+  .notif-dropdown.show { opacity: 1; pointer-events: all; transform: translateY(0) scale(1); }
+  .notif-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; font-family: 'Lexend'; font-weight: 600; font-size: 0.95rem; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; background: #ffffff; }
+  .notif-list { max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; }
+  .notif-list::-webkit-scrollbar { width: 4px; }
+  .notif-list::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+  
+  .notif-item { padding: 14px 20px; border-bottom: 1px solid #f8fafc; display: flex; align-items: flex-start; gap: 14px; transition: background 0.2s; cursor: pointer; }
+  .notif-item:hover { background: #f8fafc; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-icon { background: #ecfdf5; color: #10b981; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; border: 1px solid #d1fae5; }
+  .notif-content { display: flex; flex-direction: column; gap: 4px; }
+  .notif-title { font-family: 'Lexend'; font-size: 0.85rem; font-weight: 600; color: var(--text-main); line-height: 1.2;}
+  .notif-desc { font-size: 0.75rem; color: #64748b; }
+  .notif-empty { padding: 40px 20px; text-align: center; color: #94a3b8; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+
+  /* NEW DELIVERY POPUP MODAL */
+  .delivery-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .delivery-popup-overlay.active { opacity: 1; pointer-events: all; }
+  .delivery-popup-card { background: #ffffff; border-radius: 24px; padding: 40px; max-width: 420px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); text-align: center; transform: scale(0.9) translateY(20px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid #e2e8f0; }
+  .delivery-popup-overlay.active .delivery-popup-card { transform: scale(1) translateY(0); }
+  
+  .dp-icon-wrapper { width: 80px; height: 80px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 2.5rem; color: #10b981; border: 6px solid #d1fae5; }
+  .delivery-popup-overlay.active .dp-icon-wrapper i { animation: pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; transform: scale(0.5); animation-delay: 0.2s; }
+  @keyframes pop-in { to { opacity: 1; transform: scale(1); } }
+  
+  .dp-title { font-family: 'Lexend', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin: 0 0 8px 0; letter-spacing: -0.02em; }
+  .dp-desc { color: var(--text-muted); font-size: 0.95rem; margin: 0 0 24px 0; line-height: 1.5; }
+  
+  .dp-details-box { background: #f8fafc; border: 1px dashed #cbd5e0; border-radius: 16px; padding: 20px; margin-bottom: 32px; display: flex; flex-direction: column; gap: 12px; text-align: left; }
+  .dp-row { display: flex; justify-content: space-between; align-items: center; }
+  .dp-label { font-family: 'Lexend', sans-serif; font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .dp-value { font-family: 'Lexend', sans-serif; font-weight: 700; color: var(--text-main); font-size: 0.95rem; }
+  
+  .dp-actions { display: flex; flex-direction: column; gap: 12px; }
+  .btn-dp-primary { background: var(--brand-accent); color: white; border: none; padding: 14px; border-radius: 12px; font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+  .btn-dp-primary:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
+  .btn-dp-secondary { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 14px; border-radius: 12px; font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+  .btn-dp-secondary:hover { background: #e2e8f0; color: var(--text-main); }
+
+  /* 5-Column Stats Grid */
+  .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; flex-shrink: 0; animation: slideUp 0.6s ease-out backwards; animation-delay: 0.1s; }
+  .stat-card { position: relative; overflow: hidden; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 16px; z-index: 1; }
+  .stat-icon-wrapper { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; z-index: 2; }
+  
+  .icon-total { background: #f1f5f9; color: #475569; }
+  .icon-transit { background: #eff6ff; color: #3b82f6; }
+  .icon-delivered { background: #f0fdf4; color: #10b981; }
+  .icon-exception { background: #fef2f2; color: #ef4444; }
+  .icon-pending { background: #fffbeb; color: #d97706; }
+  
+  .stat-info { display: flex; flex-direction: column; gap: 2px; z-index: 2; }
+  .stat-title { font-family: 'Lexend', sans-serif; font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-value { font-family: 'Lexend', sans-serif; font-size: 2rem; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1; display: flex; align-items: center; gap: 8px; }
+  .stat-bg-icon { position: absolute; right: -15px; bottom: -15px; font-size: 7rem; color: var(--text-main); opacity: 0.02; z-index: 0; pointer-events: none; }
+
+  @keyframes alert-pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+  .live-dot { width: 10px; height: 10px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: alert-pulse 2s infinite; margin-top: 4px; }
+  .stat-card.alert-state { background-color: #fffafa; border-color: #fca5a5; }
+  .stat-card.alert-state .stat-icon-wrapper { background: #fee2e2; color: #ef4444; }
+  .stat-card.alert-state .stat-title { color: #dc2626; }
+  .stat-card.alert-state .stat-value { color: #ef4444; }
+
+  /* Table Container */
+  .content-card { flex: 1; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.03); display: flex; flex-direction: column; min-height: 0; animation: slideUp 0.6s ease-out backwards; animation-delay: 0.2s; }
+  .section-title { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.1rem; margin: 0 0 16px 0; color: var(--text-main); display: flex; align-items: center; gap: 8px; flex-shrink: 0;}
+  .section-title i { color: var(--brand-accent); font-size: 1.2rem; }
+
+  .table-container { flex: 1; overflow-y: auto; border-radius: 12px; border: 1px solid var(--border-color); background: #ffffff; }
+  .table-container::-webkit-scrollbar { width: 6px; }
+  .table-container::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 8px; }
+  
+  .minimal-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+  .minimal-table th { font-family: 'Lexend', sans-serif; padding: 14px 20px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid #f1f5f9; position: sticky; top: 0; background-color: rgba(255,255,255,0.95); backdrop-filter: blur(4px); z-index: 10; letter-spacing: 0.05em; }
+  .minimal-table td { padding: 14px 20px; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; vertical-align: middle; transition: background 0.2s; }
+  .minimal-table tr:hover td { background-color: #f8fafc; }
+  .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; display: inline-block; border: 1px solid; font-family: 'Lexend', sans-serif; }
+  
+  .error-alert { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 12px 16px; border-radius: 10px; font-family: 'Lexend'; font-size: 0.9rem; display: none; animation: slideDown 0.3s ease; }
+
+  /* Animations */
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* TRACKING MODAL CSS */
+  .tracking-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .tracking-overlay.active { opacity: 1; pointer-events: all; }
+  .tracking-modal { background: #f8fafc; border-radius: 24px; max-width: 900px; width: 95%; height: 88vh; max-height: 88vh; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: scale(0.98) translateY(10px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; position: relative; border: 1px solid #ffffff; }
+  .tracking-overlay.active .tracking-modal { transform: scale(1) translateY(0); }
+  .tracking-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); z-index: 20; padding: 24px 32px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; border-radius: 24px 24px 0 0; flex-shrink: 0; }
+  .awb-header-group { display: flex; align-items: center; gap: 16px; }
+  .awb-number { font-family: 'Lexend', sans-serif; font-size: 1.6rem; font-weight: 600; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px; }
+  .awb-status-badge { padding: 6px 14px; border-radius: 12px; font-family: 'Lexend', sans-serif; font-weight: 500; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e8f0; background: #ffffff; color: var(--text-main); }
+  .btn-close-modal { background: transparent; border: none; width: 36px; height: 36px; border-radius: 10px; font-size: 1.4rem; color: #64748b; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
+  .btn-close-modal:hover { color: var(--text-main); background: #f1f5f9; }
+  .tracking-body { padding: 24px 32px; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  .stepper-container { background: #ffffff; border-radius: 16px; padding: 24px 20px 20px 20px; border: 1px solid #e2e8f0; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); flex-shrink: 0; }
+  .stepper { display: flex; justify-content: space-between; position: relative; padding: 0 10px; }
+  .stepper-track { position: absolute; top: 7px; left: 75px; right: 75px; height: 3px; background: #e2e8f0; z-index: 1; border-radius: 2px; }
+  .stepper-progress { height: 100%; width: 0%; background: var(--text-main); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease; border-radius: 2px; }
+  .step { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 130px; text-align: center; }
+  .step-dot { width: 16px; height: 16px; border-radius: 50%; background: #ffffff; border: 3px solid #cbd5e0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 0 4px #ffffff; }
+  .step-label { font-family: 'Lexend', sans-serif; color: #94a3b8; transition: color 0.3s ease; line-height: 1.3;}
+  .stepper-loc-city { display: block; font-size: 0.85rem; font-weight: 700; color: inherit; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 2px; word-wrap: break-word; }
+  .stepper-loc-country { display: block; font-size: 0.65rem; font-weight: 600; color: inherit; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.75; }
+  .stepper-transit { display: inline-block; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .stepper.state-booked .step:nth-child(2) .step-dot { border-color: var(--brand-accent); background: var(--brand-accent); box-shadow: 0 0 0 4px #eef2ff; }
+  .stepper.state-booked .step:nth-child(2) .step-label { color: var(--brand-accent); }
+  .stepper.state-transit .stepper-progress { background: var(--brand-accent); }
+  .stepper.state-transit .step:nth-child(2) .step-dot { border-color: var(--brand-accent); background: var(--brand-accent); }
+  .stepper.state-transit .step:nth-child(2) .step-label { color: var(--brand-accent); }
+  .stepper.state-transit .step:nth-child(3) .step-dot { border-color: var(--brand-accent); background: #ffffff; box-shadow: 0 0 0 4px #eef2ff; border-width: 4px; width: 18px; height: 18px; margin-top: -1px; }
+  .stepper.state-transit .step:nth-child(3) .step-label { color: var(--brand-accent); font-weight: 700; }
+  .stepper.state-delivered .stepper-progress { background: #10b981; }
+  .stepper.state-delivered .step:nth-child(2) .step-dot, .stepper.state-delivered .step:nth-child(3) .step-dot { border-color: #10b981; background: #10b981; }
+  .stepper.state-delivered .step:nth-child(2) .step-label, .stepper.state-delivered .step:nth-child(3) .step-label { color: #10b981; }
+  .stepper.state-delivered .step:nth-child(4) .step-dot { border-color: #10b981; background: #10b981; box-shadow: 0 0 0 4px #ecfdf5; border-width: 4px; width: 18px; height: 18px; margin-top: -1px;}
+  .stepper.state-delivered .step:nth-child(4) .step-label { color: #10b981; font-weight: 700; }
+  .stepper.state-exception .stepper-progress { background: #ef4444; }
+  .stepper.state-exception .step .step-dot { border-color: #ef4444; background: #ef4444; box-shadow: 0 0 0 4px #fef2f2; }
+  .stepper.state-exception .step .step-label { color: #ef4444; }
+  .details-grid { display: grid; grid-template-columns: 310px 1fr; gap: 24px; flex: 1; overflow: hidden; min-height: 0; }
+  @media (max-width: 800px) { .details-grid { grid-template-columns: 1fr; overflow-y: auto; } .timeline-wrapper { overflow-y: visible !important; } }
+  .left-info-panel { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 8px;}
+  .left-info-panel::-webkit-scrollbar { width: 4px; }
+  .left-info-panel::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+  .right-log-panel { display: flex; flex-direction: column; overflow: hidden; }
+  .section-heading { font-family: 'Lexend', sans-serif; font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; flex-shrink: 0; }
+  .info-group-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.01); display: flex; flex-direction: column; gap: 10px; }
+  .info-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #f1f5f9; padding-bottom: 8px; }
+  .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .info-row-label { font-family: 'Lexend', sans-serif; font-size: 0.75rem; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;}
+  .info-row-value { font-weight: 600; color: var(--text-main); font-size: 0.85rem; text-align: right; max-width: 60%; word-break: break-word; }
+  .route-display { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 4px 0;}
+  .route-point { display: flex; flex-direction: column; align-items: center; line-height: 1.2; text-align: center; }
+  .route-city { font-family: 'Lexend', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: -0.02em; }
+  .route-country { font-family: 'Lexend', sans-serif; font-size: 0.65rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+  .route-divider { color: #cbd5e0; font-size: 1.1rem; padding-bottom: 12px; } 
+  .carrier-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-top: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.01); display: flex; align-items: center; gap: 16px; }
+  .carrier-icon { background: #f8fafc; color: var(--text-main); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid #e2e8f0;}
+  .carrier-text { display: flex; flex-direction: column; gap: 2px; }
+  .carrier-title { font-family: 'Lexend'; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+  .carrier-docket { font-size: 0.8rem; color: #64748b; font-family: monospace; font-weight: 500; }
+  .timeline-wrapper { flex: 1; overflow-y: auto; padding-right: 12px; }
+  .timeline-wrapper::-webkit-scrollbar { width: 6px; }
+  .timeline-wrapper::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 8px; }
+  .timeline-row { display: grid; grid-template-columns: 85px 30px 1fr; margin-bottom: 0; }
+  .time-col { text-align: right; padding-right: 12px; padding-top: 14px; }
+  .tl-date { display: block; font-family: 'Lexend', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--text-main); line-height: 1.2; text-transform: uppercase; }
+  .tl-time { display: block; font-size: 0.75rem; color: #64748b; font-weight: 500; margin-top: 4px; }
+  .node-col { position: relative; display: flex; justify-content: center; }
+  .node-line { position: absolute; top: 32px; bottom: -14px; width: 1px; background: #cbd5e0; }
+  .timeline-row:last-child .node-line { display: none; } 
+  .node-dot { width: 10px; height: 10px; border-radius: 50%; background: #ffffff; border: 2px solid #94a3b8; position: relative; z-index: 2; margin-top: 17px; }
+  .timeline-row.newest .node-dot { background: var(--brand-accent); border: 2px solid #ffffff; width: 14px; height: 14px; margin-top: 15px; animation: status-pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes status-pulse { 0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); } 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); } }
+  .content-col { padding-left: 12px; padding-bottom: 24px; }
+  .tl-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+  .timeline-row.newest .tl-card { border-color: var(--brand-accent); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08); }
+  .tl-status { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--text-main); margin-bottom: 6px; display: block; }
+  .tl-meta { font-size: 0.85rem; color: #64748b; display: flex; flex-direction: column; gap: 6px; }
+  .tl-meta span { display: flex; align-items: flex-start; gap: 8px; }
+  .tl-meta i { color: #94a3b8; font-size: 0.9rem; margin-top: 1px; }
+  
+
+  /* Responsive Mobile Adaptation for Shared Views */
+  @media (max-width: 900px) {
+    .sidebar { display: none !important; }
+    .main-content, .main-content.expanded {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding: 20px 16px 90px 16px !important;
+    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="delivery-popup-overlay" id="deliveryAlertOverlay">
+  <div class="delivery-popup-card">
+    <div class="dp-icon-wrapper">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <h3 class="dp-title">Package Delivered!</h3>
+    <p class="dp-desc">A shipment from your branch has successfully reached its destination.</p>
+    
+    <div class="dp-details-box">
+      <div class="dp-row">
+        <span class="dp-label">Tracking ID</span>
+        <span class="dp-value" id="alertAwb">---</span>
+      </div>
+      <div class="dp-row">
+        <span class="dp-label">Destination</span>
+        <span class="dp-value" id="alertDest">---</span>
+      </div>
+    </div>
+
+    <div class="dp-actions">
+      <button class="btn-dp-primary" onclick="notifyPartyAction()">
+        Notify Party <i class="bi bi-whatsapp"></i>
+      </button>
+      <button class="btn-dp-secondary" onclick="markDeliveryRead()">
+        Mark as Read
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="tracking-overlay" id="trackingModalOverlay">
+  <div class="tracking-modal">
+    <div class="tracking-header">
+      <div class="awb-header-group">
+        <h2 class="awb-number" id="lblAwb"><i class="bi bi-box-seam" style="color: var(--text-muted); font-size: 1.4rem;"></i> ---</h2>
+        <div class="awb-status-badge" id="lblStatusBadge">Pending</div>
+      </div>
+      <button class="btn-close-modal" onclick="closeTrackingModal()" title="Close"><i class="bi bi-x"></i></button>
+    </div>
+    
+    <div class="tracking-body">
+      <div class="stepper-container">
+        <div class="stepper" id="stepperWrapper">
+          <div class="stepper-track"><div class="stepper-progress" id="stepperLine"></div></div>
+          <div class="step" id="step1"><div class="step-dot"></div><div class="step-label" id="stepperLabelOrigin">Origin</div></div>
+          <div class="step" id="step2"><div class="step-dot"></div><div class="step-label" id="stepperLabelTransit">In-Transit</div></div>
+          <div class="step" id="step3"><div class="step-dot"></div><div class="step-label" id="stepperLabelDest">Destination</div></div>
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="left-info-panel">
+          <h4 class="section-heading">Shipment Info</h4>
+          <div class="info-group-card" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+            <div id="lblRoute">
+              <div class="route-display">
+                <div class="route-point"><span class="route-city">---</span></div>
+                <div class="route-divider"><i class="bi bi-arrow-right"></i></div>
+                <div class="route-point"><span class="route-city">---</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="info-group-card">
+            <div class="info-row"><span class="info-row-label"><i class="bi bi-calendar-event"></i> Date</span><span class="info-row-value" id="lblDate">---</span></div>
+            <div class="info-row"><span class="info-row-label"><i class="bi bi-person-up"></i> Shipper</span><span class="info-row-value" id="lblShipper">---</span></div>
+            <div class="info-row"><span class="info-row-label"><i class="bi bi-person-down"></i> Consignee</span><span class="info-row-value" id="lblConsignee">---</span></div>
+          </div>
+          <div class="info-group-card">
+            <div class="info-row"><span class="info-row-label"><i class="bi bi-box"></i> Weight</span><span class="info-row-value" id="lblWeightOnly">--- KG</span></div>
+            <div class="info-row"><span class="info-row-label"><i class="bi bi-boxes"></i> Pieces</span><span class="info-row-value" id="lblPcsOnly">--- PCS</span></div>
+            <div class="info-row"><span class="info-row-label"><i class="bi bi-tag"></i> Type</span><span class="info-row-value" id="lblType">---</span></div>
+          </div>
+          <div class="carrier-card">
+            <div class="carrier-icon"><i class="bi bi-airplane"></i></div>
+            <div class="carrier-text">
+              <span class="carrier-title" id="lbl3rdPartyName">Not Assigned</span>
+              <span class="carrier-docket" id="lbl3rdPartyDocket">Internal Route</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-log-panel">
+          <h4 class="section-heading">Activity Log</h4>
+          <div class="timeline-wrapper"><div id="timelineContainer"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-layout">
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand"><i class="bi bi-box-seam"></i> <span class="brand-text">Al-Farha</span></div></div>
+        <nav class="nav-menu">
+      <div class="nav-item active" onclick="returnToDashboard()" title="Dashboard"><i class="bi bi-grid"></i> <span class="nav-text">Dashboard</span></div>
+      <div class="nav-item " onclick="loadBookingForm()" title="New Booking"><i class="bi bi-plus-circle"></i> <span class="nav-text">New Booking</span></div>
+      <div class="nav-item " onclick="loadTransfers()" title="Inventory"><i class="bi bi-arrow-left-right"></i> <span class="nav-text">Inventory</span></div>
+      <div class="nav-item " onclick="loadStatusUpdate()" title="Update Status"><i class="bi bi-geo-alt"></i> <span class="nav-text">Update Status</span></div>
+      <div class="nav-item " id="nav-consol" onclick="loadConsolidation()" title="Consolidations"><i class="bi bi-layers"></i> <span class="nav-text">Consolidations</span></div>
+      <div class="nav-item d-none " id="nav-admin" onclick="loadAdminPanel()" title="Master Control"><i class="bi bi-shield-lock"></i> <span class="nav-text">Master Control</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-details">
+        <span class="user-name" id="navName">Loading...</span>
+        <span class="user-branch" id="navBranch">Branch</span>
+      </div>
+      <button class="btn-logout" onclick="logoutSystem()" title="Logout"><i class="bi bi-box-arrow-right"></i></button>
+    </div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <div class="bg-glow"></div>
+    
+    <div class="top-section">
+      <div class="header-titles">
+        <h1 class="page-title" id="welcomeMsg"><i class="bi bi-stars text-primary"></i> Dashboard</h1>
+        <p class="page-subtitle" id="quoteMsg">Loading your daily insight...</p>
+      </div>
+      
+      <div class="top-actions">
+        <div class="compact-search">
+          <i class="bi bi-search" style="color: #94a3b8; font-size: 1.1rem;"></i>
+          <input type="text" id="searchInput" class="search-input-widget" placeholder="Track AWB or ID..." onkeypress="if(event.key === 'Enter') executeSearch()">
+          <button class="btn-search-hero" id="searchBtn" onclick="executeSearch()">Track</button>
+          <div id="searchAlert" class="error-alert search-alert"></div>
+        </div>
+
+        <div class="notification-wrapper" id="notifWrapper">
+          <button class="btn-bell" id="bellBtn" onclick="toggleNotifications(event)">
+            <i class="bi bi-bell"></i>
+            <span class="bell-badge" id="bellBadge">0</span>
+          </button>
+          
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+              Unread Deliveries 
+              <span class="status-badge" style="font-size:0.7rem; color:#10b981; background:#ecfdf5; border-color:#d1fae5;" id="notifCountLabel">0 New</span>
+            </div>
+            <div class="notif-list" id="notifList">
+              <div class="notif-empty">
+                <i class="bi bi-bell-slash" style="font-size: 1.8rem;"></i>
+                <span>No new deliveries</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="bi bi-boxes stat-bg-icon"></i>
+        <div class="stat-icon-wrapper icon-total"><i class="bi bi-box2"></i></div>
+        <div class="stat-info"><span class="stat-title">Total Bookings</span><h2 class="stat-value" id="statTotal"><span class="spinner-border spinner-border-sm" style="color: var(--text-muted); width: 20px; height: 20px;"></span></h2></div>
+      </div>
+      <div class="stat-card">
+        <i class="bi bi-airplane stat-bg-icon"></i>
+        <div class="stat-icon-wrapper icon-transit"><i class="bi bi-truck"></i></div>
+        <div class="stat-info"><span class="stat-title">In-Transit</span><h2 class="stat-value" id="statTransit"><span class="spinner-border spinner-border-sm" style="color: #3b82f6; width: 20px; height: 20px;"></span></h2></div>
+      </div>
+      <div class="stat-card">
+        <i class="bi bi-check-circle stat-bg-icon"></i>
+        <div class="stat-icon-wrapper icon-delivered"><i class="bi bi-check2-circle"></i></div>
+        <div class="stat-info"><span class="stat-title">Delivered</span><h2 class="stat-value" id="statDelivered"><span class="spinner-border spinner-border-sm" style="color: #10b981; width: 20px; height: 20px;"></span></h2></div>
+      </div>
+      
+      <div class="stat-card">
+        <i class="bi bi-exclamation-triangle stat-bg-icon"></i>
+        <div class="stat-icon-wrapper icon-exception"><i class="bi bi-exclamation-circle"></i></div>
+        <div class="stat-info"><span class="stat-title">Exceptions</span><h2 class="stat-value" id="statExceptions"><span class="spinner-border spinner-border-sm" style="color: #ef4444; width: 20px; height: 20px;"></span></h2></div>
+      </div>
+
+      <div class="stat-card" id="pendingCardWrapper">
+        <i class="bi bi-hourglass-split stat-bg-icon"></i>
+        <div class="stat-icon-wrapper icon-pending"><i class="bi bi-clock-history"></i></div>
+        <div class="stat-info"><span class="stat-title">Pending Inbound</span><h2 class="stat-value" id="statPending"><span class="spinner-border spinner-border-sm" style="color: #d97706; width: 20px; height: 20px;"></span></h2></div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <h3 class="section-title"><i class="bi bi-activity"></i> Live Branch Activity</h3>
+      <div class="table-container">
+        <table class="minimal-table">
+          <thead><tr><th>Booking ID</th><th>Destination</th><th>Current Status</th></tr></thead>
+          <tbody id="recentTableBody"><tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);"><span class="spinner-border spinner-border-sm"></span> Loading branch data...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+  <!-- Modular Application Scripts -->
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

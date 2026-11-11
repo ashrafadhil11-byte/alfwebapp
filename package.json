@@ -1,0 +1,14 @@
+{
+  "name": "alfarha-cargo-pwa-system",
+  "version": "2.0.0",
+  "description": "Al-Farha Cargo Enterprise Logistics Portal & Mobile PWA (Migrated from Google Apps Script to GitHub/Vercel)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx vercel dev"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Master Control Panel - Al-Farha Cargo</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Session & Auto-Redirect Guard -->
+  <script src="/auth-guard.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+  :root { --bg-color: #fafafa; --card-bg: #ffffff; --border-color: #eaeaea; --text-main: #111827; --text-muted: #6b7280; --brand-accent: #6f42c1; --sidebar-width: 260px; --sidebar-collapsed-width: 80px; }
+  .app-layout { display: flex; min-height: 100vh; font-family: 'Comfortaa', cursive; color: var(--text-main); background-color: var(--bg-color); }
+  .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; height: 100vh; padding: 32px 20px; display: flex; flex-direction: column; z-index: 100; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; }
+  .sidebar.collapsed { width: var(--sidebar-collapsed-width); padding: 32px 10px; }
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; padding: 0 5px; }
+  .sidebar-brand { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.25rem; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .sidebar-brand i { color: var(--brand-accent); font-size: 1.5rem; }
+  .toggle-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s ease; display: flex; align-items: center; justify-content: center; }
+  .toggle-btn:hover { color: var(--brand-accent); }
+  .sidebar.collapsed .brand-text { display: none; }
+  .sidebar.collapsed .sidebar-header { justify-content: center; }
+  .sidebar.collapsed .toggle-btn { margin: 0 auto; }
+  .nav-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .nav-item { font-family: 'Lexend', sans-serif; font-size: 0.95rem; font-weight: 500; padding: 14px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; color: var(--text-muted); transition: all 0.2s ease; white-space: nowrap; }
+  .nav-item i { font-size: 1.2rem; min-width: 30px; }
+  .nav-item:hover { color: var(--brand-accent); background-color: #faf5ff; }
+  .nav-item.active { color: var(--brand-accent); background-color: #f3e8ff; }
+  .sidebar.collapsed .nav-text { display: none; }
+  .sidebar.collapsed .nav-item { justify-content: center; padding: 14px 0; }
+  .sidebar.collapsed .nav-item i { min-width: auto; }
+  .sidebar-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--border-color); white-space: nowrap; }
+  .user-details { display: flex; flex-direction: column; }
+  .user-name { font-weight: 600; font-size: 0.9rem; }
+  .user-branch { font-size: 0.75rem; color: var(--text-muted); }
+  .sidebar.collapsed .user-details { display: none; }
+  .sidebar.collapsed .sidebar-footer { justify-content: center; }
+  .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 48px 5%; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: calc(100% - var(--sidebar-width)); }
+  .main-content.expanded { margin-left: var(--sidebar-collapsed-width); width: calc(100% - var(--sidebar-collapsed-width)); }
+  .page-header { margin-bottom: 30px; }
+  .page-title { font-family: 'Lexend', sans-serif; font-weight: 300; font-size: 2.2rem; letter-spacing: -0.03em; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .page-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+  .admin-tabs { display: flex; gap: 16px; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 16px; }
+  .tab-btn { background: none; border: none; font-family: 'Lexend', sans-serif; font-weight: 500; font-size: 1rem; color: var(--text-muted); padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+  .tab-btn:hover { color: var(--text-main); background: #f3f4f6; }
+  .tab-btn.active { color: var(--brand-accent); background: #f3e8ff; }
+  .content-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; display: none; animation: fadeIn 0.4s ease; }
+  .content-card.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .section-title { font-family: 'Lexend', sans-serif; font-weight: 500; font-size: 1.2rem; color: var(--text-main); margin: 0; }
+  .table-scroll-container { max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+  .table-scroll-container::-webkit-scrollbar { width: 8px; }
+  .table-scroll-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+  .table-scroll-container::-webkit-scrollbar-thumb { background: #c5c5c5; border-radius: 8px; }
+  .minimal-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+  .minimal-table th { font-family: 'Lexend', sans-serif; padding: 16px 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background-color: #fdfdfd; z-index: 10; }
+  .minimal-table td { padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; vertical-align: middle; }
+  .minimal-table tr:last-child td { border-bottom: none; }
+  
+  .badge-role { background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+  .badge-admin { background: #fee2e2; color: #dc2626; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+  .badge-hq { background: #fce7f3; color: #be185d; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+  .badge-active { background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+  .badge-inactive { background: #f3f4f6; color: #6b7280; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+
+  .action-icon-btn { background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; transition: color 0.2s ease; padding: 4px 8px; }
+  .action-icon-btn:hover { color: var(--brand-accent); }
+  .btn-primary-custom { font-family: 'Lexend', sans-serif; font-weight: 500; background-color: var(--brand-accent); color: white; border: none; padding: 10px 24px; border-radius: 12px; cursor: pointer; transition: background-color 0.2s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+  .btn-primary-custom:hover { background-color: #5a32a3; }
+  .btn-cancel-custom { font-family: 'Lexend', sans-serif; font-weight: 500; background-color: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px 24px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; }
+  .btn-cancel-custom:hover { border-color: var(--text-muted); color: var(--text-main); }
+  .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(17, 24, 39, 0.4); backdrop-filter: blur(5px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .form-modal { background: var(--card-bg); border-radius: 24px; padding: 32px; max-width: 450px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); border: 1px solid var(--border-color); transform: translateY(40px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .modal-overlay.active .form-modal { transform: translateY(0); }
+  .modal-header { font-family: 'Lexend', sans-serif; font-size: 1.3rem; font-weight: 600; color: var(--text-main); margin-bottom: 24px; display: flex; align-items: center; gap: 10px;}
+  .input-group { display: flex; flex-direction: column; margin-bottom: 16px; }
+  .input-label { font-family: 'Lexend', sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+  .minimal-input { border-radius: 12px; padding: 12px 16px; border: 1px solid var(--border-color); background-color: #f8fafc; font-family: 'Comfortaa', cursive; font-weight: 600; color: var(--text-main); width: 100%; font-size: 0.95rem; transition: all 0.2s ease; }
+  .minimal-input:focus { outline: none; border-color: var(--brand-accent); background-color: #ffffff; }
+  select.minimal-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 2.5rem; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+  .custom-alert { border-radius: 12px; font-family: 'Lexend', sans-serif; font-size: 0.9rem; padding: 16px; margin-bottom: 20px; }
+
+  /* Responsive Mobile Adaptation for Shared Views */
+  @media (max-width: 900px) {
+    .sidebar { display: none !important; }
+    .main-content, .main-content.expanded {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding: 20px 16px 90px 16px !important;
+    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="modal-overlay" id="userModal">
+  <div class="form-modal">
+    <div class="modal-header"><i class="bi bi-person-badge text-primary"></i> <span id="userModalTitle">Add New User</span></div>
+    <div id="userAlert" class="alert d-none custom-alert" role="alert"></div>
+    
+    <input type="hidden" id="userRowId">
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="input-group">
+        <label class="input-label">User ID</label>
+        <input type="text" id="mUserId" class="minimal-input" placeholder="e.g., ADM-01">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Account Status</label>
+        <select id="mUserStatus" class="minimal-input">
+          <option value="Active" selected>Active</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Full Name</label>
+      <input type="text" id="mUserName" class="minimal-input" placeholder="e.g., Muhammad Adil">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Login PIN</label>
+      <input type="password" id="mUserPin" class="minimal-input" placeholder="Secure PIN">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Role</label>
+      <select id="mUserRole" class="minimal-input">
+        <option value="Branch Manager">Branch Manager</option>
+        <option value="Head Office">Head Office</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Branch Assignment</label>
+      <select id="mUserBranch" class="minimal-input">
+        <option value="" disabled selected>Select Branch...</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel-custom" onclick="closeModal('userModal')">Cancel</button>
+      <button class="btn-primary-custom" id="saveUserBtn" onclick="saveUser()"><i class="bi bi-save"></i> Save User</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="branchModal">
+  <div class="form-modal">
+    <div class="modal-header"><i class="bi bi-building text-success"></i> <span id="branchModalTitle">Add New Branch</span></div>
+    <div id="branchAlert" class="alert d-none custom-alert" role="alert"></div>
+    
+    <input type="hidden" id="branchRowId">
+    <div class="input-group">
+      <label class="input-label">Branch ID / Code</label>
+      <input type="text" id="mBranchCode" class="minimal-input" placeholder="e.g., SLL-01">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Branch Name</label>
+      <input type="text" id="mBranchName" class="minimal-input" placeholder="e.g., Salalah Central">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Branch Type</label>
+      <select id="mBranchType" class="minimal-input">
+        <option value="Branch" selected>Branch</option>
+        <option value="Head Quarters">Head Quarters</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Location / City</label>
+      <input type="text" id="mBranchLoc" class="minimal-input" placeholder="e.g., Salalah, Oman">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel-custom" onclick="closeModal('branchModal')">Cancel</button>
+      <button class="btn-primary-custom" id="saveBranchBtn" onclick="saveBranch()"><i class="bi bi-save"></i> Save Branch</button>
+    </div>
+  </div>
+</div>
+
+<div class="app-layout">
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <i class="bi bi-box-seam-fill"></i> <span class="brand-text">Al-Farha</span>
+      </div>
+      <button class="toggle-btn" onclick="toggleSidebar()" title="Toggle Menu"><i class="bi bi-list"></i></button>
+    </div>
+    
+        <nav class="nav-menu">
+      <div class="nav-item " onclick="returnToDashboard()" title="Dashboard"><i class="bi bi-grid"></i> <span class="nav-text">Dashboard</span></div>
+      <div class="nav-item " onclick="loadBookingForm()" title="New Booking"><i class="bi bi-plus-circle"></i> <span class="nav-text">New Booking</span></div>
+      <div class="nav-item " onclick="loadTransfers()" title="Inventory"><i class="bi bi-arrow-left-right"></i> <span class="nav-text">Inventory</span></div>
+      <div class="nav-item " onclick="loadStatusUpdate()" title="Update Status"><i class="bi bi-geo-alt"></i> <span class="nav-text">Update Status</span></div>
+      <div class="nav-item " id="nav-consol" onclick="loadConsolidation()" title="Consolidations"><i class="bi bi-layers"></i> <span class="nav-text">Consolidations</span></div>
+      <div class="nav-item d-none active" id="nav-admin" onclick="loadAdminPanel()" title="Master Control"><i class="bi bi-shield-lock"></i> <span class="nav-text">Master Control</span></div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-details">
+        <span class="user-name" id="navName">Loading...</span>
+        <span class="user-branch" id="navBranch">Branch</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    
+    <div class="page-header">
+      <h1 class="page-title"><i class="bi bi-shield-lock text-danger"></i> Master Control Panel</h1>
+      <p class="page-subtitle">Manage system users, branch network, and global settings.</p>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('users', this)"><i class="bi bi-people me-2"></i> User Management</button>
+      <button class="tab-btn" onclick="switchTab('branches', this)"><i class="bi bi-buildings me-2"></i> Branch Network</button>
+    </div>
+
+    <div id="tab-users" class="content-card active">
+      <div class="card-header-flex">
+        <h3 class="section-title">System Users</h3>
+        <button class="btn-primary-custom" onclick="openUserModal()"><i class="bi bi-person-plus"></i> Add User</button>
+      </div>
+      <div class="table-scroll-container">
+        <table class="minimal-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Role</th>
+              <th>Branch</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-branches" class="content-card">
+      <div class="card-header-flex">
+        <h3 class="section-title">Branch Network</h3>
+        <button class="btn-primary-custom" onclick="openBranchModal()"><i class="bi bi-plus-circle"></i> Add Branch</button>
+      </div>
+      <div class="table-scroll-container">
+        <table class="minimal-table">
+          <thead>
+            <tr>
+              <th>Branch ID</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Location</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="branchTableBody">
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading branches...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+  <!-- Modular Application Scripts -->
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/nav.js"></script>
+  <script src="/js/adminpanel.js"></script>
+</body>
+</html>

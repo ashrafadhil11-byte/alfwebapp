@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Create Shipment - Al-Farha Cargo</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Session & Auto-Redirect Guard -->
+  <script src="/auth-guard.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+
+  <style>
+  :root { 
+    --bg-color: #f8fafc; 
+    --card-bg: #ffffff; 
+    --border-color: #e2e8f0; 
+    --text-main: #0f172a; 
+    --text-muted: #64748b; 
+    --brand-accent: #4f46e5; 
+    --sidebar-width: 260px; 
+    --sidebar-collapsed-width: 80px; 
+  }
+  
+  body, html { margin: 0; padding: 0; box-sizing: border-box; height: 100vh; overflow: hidden; background-color: var(--bg-color); }
+  *, *::before, *::after { box-sizing: inherit; }
+  
+  .app-layout { display: flex; height: 100vh; width: 100vw; font-family: 'Comfortaa', cursive; color: var(--text-main); position: relative; z-index: 1; }
+  
+  /* Immersive Background Glow */
+  .bg-glow { position: fixed; top: -15%; right: -10%; width: 60vw; height: 60vw; border-radius: 50%; background: radial-gradient(circle, rgba(79,70,229,0.06) 0%, rgba(248,250,252,0) 70%); z-index: -1; pointer-events: none; }
+
+  /* --- SIDEBAR (Preserved) --- */
+  .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; height: 100vh; padding: 24px 20px; display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 24px rgba(0,0,0,0.02); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-x: hidden; }
+  .sidebar.collapsed { width: var(--sidebar-collapsed-width); padding: 24px 10px; }
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding: 0 5px; }
+  .sidebar-brand { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.25rem; color: var(--text-main); display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+  .sidebar-brand i { color: var(--brand-accent); font-size: 1.5rem; }
+  .toggle-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: color 0.2s ease; display: flex; align-items: center; justify-content: center; }
+  .toggle-btn:hover { color: var(--brand-accent); }
+  .sidebar.collapsed .brand-text { display: none; }
+  .sidebar.collapsed .sidebar-header { justify-content: center; }
+  .sidebar.collapsed .toggle-btn { margin: 0 auto; }
+  .nav-menu { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .nav-item { font-family: 'Lexend', sans-serif; font-size: 0.9rem; font-weight: 500; padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; color: var(--text-muted); transition: all 0.2s ease; white-space: nowrap; }
+  .nav-item i { font-size: 1.2rem; min-width: 30px; }
+  .nav-item:hover { color: var(--brand-accent); background-color: #f5f3ff; transform: translateX(4px); }
+  .nav-item.active { color: var(--brand-accent); background-color: #eef2ff; font-weight: 600; }
+  .sidebar.collapsed .nav-text { display: none; }
+  .sidebar.collapsed .nav-item { justify-content: center; padding: 14px 0; }
+  .sidebar.collapsed .nav-item i { min-width: auto; }
+  .sidebar-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border-color); white-space: nowrap; margin-top: auto;}
+  .user-details { display: flex; flex-direction: column; overflow: hidden;}
+  .user-name { font-weight: 600; font-size: 0.85rem; font-family: 'Lexend', sans-serif; }
+  .user-branch { font-size: 0.7rem; color: var(--text-muted); font-family: 'Lexend', sans-serif; }
+  .sidebar.collapsed .user-details { display: none; }
+  .sidebar.collapsed .sidebar-footer { justify-content: center; }
+
+  /* --- MAIN CONTENT --- */
+  .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 32px 4% 24px 4%; height: 100vh; overflow-y: auto; transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: calc(100% - var(--sidebar-width)); display: flex; flex-direction: column; }
+  .main-content.expanded { margin-left: var(--sidebar-collapsed-width); width: calc(100% - var(--sidebar-collapsed-width)); }
+  .main-content::-webkit-scrollbar { width: 6px; }
+  .main-content::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 8px; }
+  
+  .page-header { margin-bottom: 24px; animation: slideDown 0.5s ease-out; flex-shrink: 0; }
+  .page-title { font-family: 'Lexend', sans-serif; font-weight: 300; font-size: 2rem; letter-spacing: -0.03em; margin: 0 0 4px 0; display: flex; align-items: center; gap: 12px; }
+  .page-subtitle { color: var(--text-muted); font-size: 0.95rem; font-style: italic; opacity: 0.8; margin: 0; }
+
+  /* --- MODERN SEGMENTED TABS --- */
+  .admin-tabs { display: inline-flex; background: #f1f5f9; padding: 6px; border-radius: 16px; margin-bottom: 24px; gap: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); flex-shrink: 0; }
+  .tab-btn { background: transparent; border: none; font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.9rem; color: var(--text-muted); padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px; }
+  .tab-btn:hover { color: var(--text-main); }
+  .tab-btn.active { color: var(--brand-accent); background: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+  /* --- FORM STYLING --- */
+  .content-card { display: none; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 32px 40px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.03); animation: slideUp 0.5s ease-out backwards; max-width: 1000px; margin-bottom: 40px;}
+  .content-card.active { display: block; }
+  
+  .form-section-title { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.1rem; color: var(--text-main); margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
+  .form-section-title i { color: var(--brand-accent); background: #eef2ff; padding: 8px; border-radius: 10px; font-size: 1rem; }
+  
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px; }
+  .form-grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  
+  .input-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
+  .input-label { font-family: 'Lexend', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .minimal-input { width: 100%; padding: 16px 20px; border-radius: 14px; border: 2px solid #f1f5f9; background-color: #f8fafc; font-family: 'Lexend', sans-serif; font-weight: 500; color: var(--text-main); font-size: 0.95rem; transition: all 0.3s ease; outline: none; }
+  .minimal-input::placeholder { color: #94a3b8; font-weight: 400; }
+  .minimal-input:focus { background-color: #ffffff; border-color: var(--brand-accent); box-shadow: 0 0 0 4px #eef2ff; }
+  
+  select.minimal-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1.2rem center; background-size: 1em; padding-right: 3rem; }
+
+  .divider { border: none; border-top: 1px dashed #e2e8f0; margin: 8px 0 32px 0; }
+
+  /* --- BULK UPLOAD ZONE --- */
+  .upload-zone { border: 2px dashed #cbd5e0; background-color: #f8fafc; border-radius: 20px; padding: 60px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 24px; }
+  .upload-zone:hover { background-color: #eef2ff; border-color: var(--brand-accent); transform: translateY(-2px); }
+  .upload-icon { font-size: 3.5rem; color: var(--brand-accent); margin-bottom: 16px; opacity: 0.8; transition: opacity 0.3s; }
+  .upload-zone:hover .upload-icon { opacity: 1; }
+  .upload-text { font-family: 'Lexend', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+  .upload-sub { font-size: 0.9rem; color: var(--text-muted); font-family: 'Lexend', sans-serif; }
+  
+  .table-scroll-container { max-height: 400px; overflow-y: auto; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 24px; }
+  .minimal-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+  .minimal-table th { font-family: 'Lexend', sans-serif; padding: 16px 20px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid #f1f5f9; position: sticky; top: 0; background-color: rgba(255,255,255,0.95); backdrop-filter: blur(4px); z-index: 10; letter-spacing: 0.05em; }
+  .minimal-table td { padding: 16px 20px; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; vertical-align: middle; transition: background 0.2s; font-family: 'Lexend', sans-serif;}
+  .minimal-table tr:hover td { background-color: #f8fafc; }
+  .minimal-table tr:last-child td { border-bottom: none; }
+  
+  /* --- BUTTONS --- */
+  .form-actions { display: flex; gap: 16px; margin-top: 40px; }
+  .btn-primary-custom { font-family: 'Lexend', sans-serif; font-weight: 600; background-color: var(--text-main); color: white; border: none; padding: 16px 32px; border-radius: 14px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: inline-flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+  .btn-primary-custom:hover { background-color: var(--brand-accent); transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+  .btn-primary-custom:disabled { background-color: #94a3b8; transform: none; box-shadow: none; cursor: not-allowed; }
+  
+  .btn-secondary-custom { font-family: 'Lexend', sans-serif; font-weight: 600; background-color: #f1f5f9; color: #475569; border: none; padding: 16px 32px; border-radius: 14px; cursor: pointer; transition: all 0.2s ease; font-size: 0.95rem; }
+  .btn-secondary-custom:hover { background-color: #e2e8f0; color: var(--text-main); }
+  
+  .btn-outline-custom { font-family: 'Lexend', sans-serif; font-weight: 600; background-color: transparent; color: var(--text-main); border: 2px solid #e2e8f0; padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;}
+  .btn-outline-custom:hover { border-color: var(--brand-accent); color: var(--brand-accent); background: #eef2ff;}
+
+  .custom-alert { border-radius: 16px; font-family: 'Lexend', sans-serif; font-size: 0.95rem; padding: 16px 20px; margin-bottom: 24px; max-width: 1000px; display: none; align-items: center; gap: 12px; }
+  .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+  
+  /* --- ANIMATIONS --- */
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popInIcon { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes slideUpModal { 0% { transform: translateY(40px) scale(0.95); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+
+  /* --- SUCCESS POPUP --- */
+  .success-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .success-overlay.active { opacity: 1; pointer-events: all; }
+  .success-modal { background: var(--card-bg); border-radius: 24px; padding: 48px 40px; text-align: center; max-width: 420px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #ffffff; display: none; }
+  .success-overlay.active .success-modal { display: block; animation: slideUpModal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .success-icon-bg { width: 88px; height: 88px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; border: 6px solid #d1fae5; }
+  .success-overlay.active .success-icon-bg i { font-size: 3rem; color: #10b981; animation: popInIcon 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards; opacity: 0; }
+  .success-title { font-family: 'Lexend', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; letter-spacing: -0.02em; }
+  .success-message { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 32px; line-height: 1.5; font-family: 'Lexend', sans-serif; }
+  .success-btn { font-family: 'Lexend', sans-serif; font-weight: 600; background-color: var(--brand-accent); color: white; border: none; padding: 16px 32px; border-radius: 14px; cursor: pointer; transition: all 0.2s ease; width: 100%; font-size: 1rem; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+  .success-btn:hover { background-color: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4); }
+
+  /* Responsive Mobile Adaptation for Shared Views */
+  @media (max-width: 900px) {
+    .sidebar { display: none !important; }
+    .main-content, .main-content.expanded {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding: 20px 16px 90px 16px !important;
+    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="success-overlay" id="successPopup">
+  <div class="success-modal">
+    <div class="success-icon-bg"><i class="bi bi-check-lg"></i></div>
+    <div class="success-title">Success!</div>
+    <div class="success-message" id="successPopupMessage">The shipment has been successfully saved to the database.</div>
+    <button class="success-btn" onclick="closeSuccessPopup()">Continue</button>
+  </div>
+</div>
+
+<div class="app-layout">
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand"><i class="bi bi-box-seam-fill"></i> <span class="brand-text">Al-Farha</span></div>
+      <button class="toggle-btn" onclick="toggleSidebar()" title="Toggle Menu"><i class="bi bi-list"></i></button>
+    </div>
+        <nav class="nav-menu">
+      <div class="nav-item " onclick="returnToDashboard()" title="Dashboard"><i class="bi bi-grid"></i> <span class="nav-text">Dashboard</span></div>
+      <div class="nav-item active" onclick="loadBookingForm()" title="New Booking"><i class="bi bi-plus-circle"></i> <span class="nav-text">New Booking</span></div>
+      <div class="nav-item " onclick="loadTransfers()" title="Inventory"><i class="bi bi-arrow-left-right"></i> <span class="nav-text">Inventory</span></div>
+      <div class="nav-item " onclick="loadStatusUpdate()" title="Update Status"><i class="bi bi-geo-alt"></i> <span class="nav-text">Update Status</span></div>
+      <div class="nav-item " id="nav-consol" onclick="loadConsolidation()" title="Consolidations"><i class="bi bi-layers"></i> <span class="nav-text">Consolidations</span></div>
+      <div class="nav-item d-none " id="nav-admin" onclick="loadAdminPanel()" title="Master Control"><i class="bi bi-shield-lock"></i> <span class="nav-text">Master Control</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-details"><span class="user-name" id="navName">Loading...</span><span class="user-branch" id="navBranch">Branch</span></div>
+    </div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    <div class="bg-glow"></div>
+    
+    <div class="page-header">
+      <h1 class="page-title"><i class="bi bi-journal-plus text-primary"></i> Create Shipment</h1>
+      <p class="page-subtitle">Draft new package tracking IDs into the system.</p>
+    </div>
+
+    <div class="admin-tabs">
+      <button id="tabBtnSingle" class="tab-btn active" onclick="switchTab('single', this)"><i class="bi bi-file-earmark-plus"></i> Single Entry</button>
+      <button id="tabBtnFetch" class="tab-btn" onclick="switchTab('fetch', this)"><i class="bi bi-cloud-download"></i> Fetch from Al-Farha Online</button>
+      <button id="tabBtnBulk" class="tab-btn" onclick="switchTab('bulk', this)"><i class="bi bi-cloud-arrow-up"></i> Bulk CSV Upload</button>
+    </div>
+
+    <div id="booking-alert" class="custom-alert"></div>
+
+    <div id="tab-single" class="content-card active">
+      
+      <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 16px; padding: 16px 20px; margin-bottom: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+        <div>
+          <div style="font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; color: #3730a3;"><i class="bi bi-lightning-charge-fill"></i> Auto-Fill from Al-Farha Online (api.alfarhaonline.com)</div>
+          <div style="font-size: 0.8rem; color: #4f46e5;">Enter or scan an existing Al-Farha Online Order ID to populate all fields automatically.</div>
+        </div>
+        <div style="display: flex; gap: 8px; flex: 1; min-width: 260px; max-width: 420px;">
+          <input type="text" id="quickOnlineOrderInput" class="minimal-input" style="padding: 10px 14px; background: #ffffff; border-color: #c7d2fe;" placeholder="Order / Booking ID (e.g., 0620366)..." onkeypress="if(event.key==='Enter') fetchAndFillSingleForm()">
+          <button type="button" id="quickFetchBtn" class="btn-primary-custom" style="padding: 10px 18px; white-space: nowrap;" onclick="fetchAndFillSingleForm()"><i class="bi bi-cloud-arrow-down-fill"></i> Fetch API</button>
+        </div>
+      </div>
+
+      <h3 class="form-section-title"><i class="bi bi-box-seam"></i> Package Identifiers</h3>
+      <div class="form-grid form-grid-3">
+        <div class="input-group"><label class="input-label">Custom Booking ID</label><input type="text" id="bookingID" class="minimal-input" placeholder="e.g., 0620366" autocomplete="off"></div>
+        <div class="input-group"><label class="input-label">Package Type</label><select id="packageType" class="minimal-input"><option value="Document">Document</option><option value="Parcel" selected>Parcel</option><option value="Air Cargo">Air Cargo</option><option value="Sea Freight">Sea Freight</option><option value="Freight">Freight</option></select></div>
+        <div class="input-group"><label class="input-label">Total Weight (KG)</label><input type="number" id="weight" class="minimal-input" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="input-group"><label class="input-label">Total Pieces (PCS)</label><input type="number" id="pcs" class="minimal-input" placeholder="1" min="1"></div>
+      </div>
+
+      <hr class="divider">
+
+      <h3 class="form-section-title"><i class="bi bi-person-badge"></i> Contact Information</h3>
+      <div class="form-grid">
+        <div class="input-group"><label class="input-label">Shipper Name</label><input type="text" id="shipper" class="minimal-input" placeholder="Sender's Name"></div>
+        <div class="input-group"><label class="input-label">Shipper Phone</label><input type="text" id="shipperPhone" class="minimal-input" placeholder="968 9XXXXXXX"></div>
+        <div class="input-group"><label class="input-label">Consignee Name</label><input type="text" id="consignee" class="minimal-input" placeholder="Receiver's Name"></div>
+      </div>
+
+      <hr class="divider">
+
+      <h3 class="form-section-title"><i class="bi bi-geo-alt"></i> Routing Destinations</h3>
+      <div class="form-grid">
+        <div class="input-group"><label class="input-label">Origin City</label><input type="text" id="originCity" class="minimal-input" placeholder="e.g., Salalah"></div>
+        <div class="input-group"><label class="input-label">Origin Country</label><input type="text" id="originCountry" class="minimal-input" placeholder="e.g., Oman"></div>
+        <div class="input-group"><label class="input-label">Destination City</label><input type="text" id="destCity" class="minimal-input" placeholder="e.g., Dubai"></div>
+        <div class="input-group"><label class="input-label">Destination Country</label><input type="text" id="destCountry" class="minimal-input" placeholder="e.g., UAE"></div>
+      </div>
+
+      <div class="form-actions">
+        <button id="submitBtn" class="btn-primary-custom" onclick="submitBooking()">Submit Booking <i class="bi bi-arrow-right"></i></button>
+        <button class="btn-secondary-custom" onclick="clearSingleForm()">Clear Fields</button>
+      </div>
+    </div>
+
+    <div id="tab-fetch" class="content-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px;">
+        <div>
+          <h3 class="form-section-title" style="margin:0;"><i class="bi bi-cloud-download"></i> Fetch Order from Al-Farha Online API</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 0 0;">Pulls live sender, receiver, routing, cargo type, weight, and pieces from <code>api.alfarhaonline.com</code>.</p>
+        </div>
+        <button type="button" class="btn-outline-custom" onclick="triggerDesktopBarcodeScan()"><i class="bi bi-upc-scan"></i> Scan with Camera</button>
+      </div>
+
+      <div style="display: flex; gap: 12px; max-width: 600px; margin-bottom: 28px;">
+        <input type="text" id="desktopFetchInput" class="minimal-input" placeholder="Scan barcode or enter Order No (e.g., 0620366)..." autocomplete="off" onkeypress="if(event.key==='Enter') triggerDesktopApiFetch()">
+        <button type="button" id="desktopFetchBtn" class="btn-primary-custom" style="white-space: nowrap;" onclick="triggerDesktopApiFetch()">
+          <i class="bi bi-search"></i> Fetch Order Details
+        </button>
+      </div>
+
+      <div id="desktopFetchPreview" class="d-none" style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 20px; padding: 28px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #cbd5e0; padding-bottom: 16px; margin-bottom: 20px;">
+          <div>
+            <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-family: 'Lexend', sans-serif; font-weight: 600;">Verified Order ID</span>
+            <h2 id="dfpId" style="font-family: 'Lexend', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--brand-accent); margin: 4px 0 0 0;">---</h2>
+          </div>
+          <span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 6px 14px; border-radius: 999px; font-family: 'Lexend', sans-serif; font-size: 0.8rem; font-weight: 600;">
+            <i class="bi bi-check-circle-fill"></i> API Data Verified
+          </span>
+        </div>
+
+        <div class="form-grid" style="margin-bottom: 24px;">
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0;">
+            <div class="input-label">Origin Route</div>
+            <div id="dfpOrigin" style="font-family: 'Lexend', sans-serif; font-weight: 700; font-size: 1.05rem; margin-top: 4px;">---</div>
+          </div>
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0;">
+            <div class="input-label">Destination Route</div>
+            <div id="dfpDest" style="font-family: 'Lexend', sans-serif; font-weight: 700; font-size: 1.05rem; margin-top: 4px;">---</div>
+          </div>
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0;">
+            <div class="input-label">Cargo Type & Specs</div>
+            <div id="dfpSpecs" style="font-family: 'Lexend', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--brand-accent); margin-top: 4px;">---</div>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-bottom: 24px;">
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0;">
+            <div class="input-label">Shipper Name & Phone</div>
+            <div id="dfpShipper" style="font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">---</div>
+            <div id="dfpPhone" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">---</div>
+          </div>
+          <div style="background: #ffffff; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0;">
+            <div class="input-label">Consignee Name</div>
+            <div id="dfpConsignee" style="font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">---</div>
+          </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 20px;">
+          <button type="button" id="dfpSaveBtn" class="btn-primary-custom" style="background-color: #10b981;" onclick="submitDesktopFetchedBooking()">
+            <i class="bi bi-cloud-arrow-up-fill"></i> Confirm & Save to Sheet
+          </button>
+          <button type="button" class="btn-secondary-custom" onclick="transferFetchedToSingleForm()">
+            <i class="bi bi-pencil-square"></i> Edit Details in Form
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-bulk" class="content-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 class="form-section-title" style="margin:0;"><i class="bi bi-filetype-csv"></i> Data Import</h3>
+        <button class="btn-outline-custom" onclick="downloadTemplate()"><i class="bi bi-download"></i> CSV Template</button>
+      </div>
+
+      <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleFileUpload(event)">
+      
+      <div class="upload-zone" onclick="document.getElementById('csvFileInput').click()">
+        <i class="bi bi-cloud-arrow-up upload-icon"></i>
+        <div class="upload-text">Click to browse or drag your .csv file here</div>
+        <div class="upload-sub">Ensure your headers strictly match the template layout.</div>
+      </div>
+
+      <div class="table-scroll-container d-none" id="previewContainer">
+        <table class="minimal-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Shipper</th>
+              <th>Phone</th>
+              <th>Consignee</th>
+              <th>Destination</th>
+            </tr>
+          </thead>
+          <tbody id="previewTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="form-actions d-none" id="bulkActionContainer">
+        <button id="submitBulkBtn" class="btn-primary-custom" onclick="submitBulkBookings()"><i class="bi bi-rocket-takeoff"></i> Process <span id="bulkCount" style="margin: 0 4px;">0</span> Bookings</button>
+        <button class="btn-secondary-custom" onclick="resetBulkUpload()">Cancel</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+  <!-- Modular Application Scripts -->
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/scanner.js"></script>
+  <script src="/js/booking.js"></script>
+</body>
+</html>

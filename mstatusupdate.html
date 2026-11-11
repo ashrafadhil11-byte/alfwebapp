@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#f8fafc">
+  <title>Scan & Update - Al-Farha Cargo</title>
+
+  <!-- Session & Auto-Redirect Guard -->
+  <script src="/auth-guard.js"></script>
+
+  <link rel="manifest" href="/manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <!-- REQUIRED CAMERA LIBRARY -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  
+  <!-- External Scanner Library -->
+  <script src="/scanner.js"></script>
+
+  <style>
+    :root { 
+      --bg-color: #f8fafc; 
+      --card-bg: #ffffff; 
+      --border-color: #e2e8f0; 
+      --text-main: #0f172a; 
+      --text-muted: #64748b; 
+      --brand-accent: #4f46e5; 
+      --brand-dark: #3730a3;
+      --success-color: #10b981;
+      --bottom-nav-height: 65px;
+    }
+    
+    body, html { margin: 0; padding: 0; box-sizing: border-box; height: 100vh; overflow: hidden; background-color: var(--bg-color); font-family: 'Comfortaa', cursive; color: var(--text-main); }
+    *, *::before, *::after { box-sizing: inherit; }
+    
+    /* UTILITY CLASSES */
+    .d-none { display: none !important; }
+
+    .mobile-app { display: flex; flex-direction: column; height: 100vh; width: 100vw; position: relative; overflow: hidden; }
+    .bg-glow { position: fixed; top: -10%; right: -20%; width: 80vw; height: 80vw; border-radius: 50%; background: radial-gradient(circle, rgba(79,70,229,0.08) 0%, rgba(248,250,252,0) 70%); z-index: -1; pointer-events: none; }
+    
+    .main-scroll-area { flex: 1; overflow-y: auto; padding: 20px 16px; padding-bottom: calc(var(--bottom-nav-height) + 40px); -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+    .main-scroll-area::-webkit-scrollbar { display: none; }
+
+    /* Header */
+    .page-header { margin-bottom: 24px; animation: slideDown 0.5s ease-out; }
+    .page-title { font-family: 'Lexend', sans-serif; font-weight: 700; font-size: 1.6rem; letter-spacing: -0.02em; margin: 0 0 4px 0; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+    .page-subtitle { color: var(--text-muted); font-size: 0.85rem; margin: 0; line-height: 1.4; }
+    
+    /* Segmented Control (Tabs) */
+    .segment-tabs { display: flex; background: #e2e8f0; padding: 4px; border-radius: 16px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; -webkit-overflow-scrolling: touch;}
+    .segment-tabs::-webkit-scrollbar { display: none; }
+    .seg-btn { flex: 1; min-width: 80px; background: transparent; border: none; font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.85rem; color: #64748b; padding: 12px 8px; border-radius: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;}
+    .seg-btn.active { color: var(--brand-accent); background: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+    /* Content Cards */
+    .content-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 24px 20px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.03); animation: slideUp 0.4s ease-out backwards; margin-bottom: 24px; }
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    
+    /* Inputs */
+    .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+    .input-label { font-family: 'Lexend', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .input-with-btn { display: flex; gap: 8px; }
+    
+    .minimal-input { width: 100%; padding: 16px; border-radius: 14px; border: 2px solid #f1f5f9; background-color: #f8fafc; font-family: 'Lexend', sans-serif; font-weight: 500; color: var(--text-main); font-size: 0.95rem; transition: all 0.3s; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+    .minimal-input:focus { background-color: #ffffff; border-color: var(--brand-accent); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1); }
+    textarea.minimal-input { min-height: 100px; resize: vertical; line-height: 1.5; }
+    
+    /* Scanner Button styling */
+    .btn-scan-input { background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-dark) 100%); color: white; border: none; border-radius: 14px; width: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; flex-shrink: 0; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
+    .btn-scan-input:active { transform: scale(0.92); box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3); }
+    
+    .status-select { font-weight: 700; color: var(--brand-accent); border-color: #e0e7ff; background-color: #eef2ff; }
+    .status-select:focus { border-color: var(--brand-accent); }
+    .status-select optgroup { font-family: 'Lexend', sans-serif; font-weight: 700; color: var(--text-muted); font-style: normal; }
+    .status-select option { font-weight: 500; color: var(--text-main); }
+
+    /* Action Buttons */
+    .btn-primary-custom { font-family: 'Lexend', sans-serif; font-weight: 700; background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-dark) 100%); color: white; border: none; padding: 18px; border-radius: 16px; width: 100%; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; font-size: 1.05rem; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 24px; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+    .btn-primary-custom:active { transform: scale(0.97); box-shadow: 0 5px 10px -5px rgba(79, 70, 229, 0.4); }
+    .btn-primary-custom:disabled { background: #cbd5e0; box-shadow: none; cursor: not-allowed; }
+    
+    /* Interactive Inventory List */
+    .inv-list-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; border-left: 4px solid transparent; }
+    .inv-list-item:last-child { border-bottom: none; }
+    .inv-list-item:active { background-color: #f8fafc; }
+    
+    /* Selected state for bulk mode */
+    .inv-list-item.selected { background-color: #eef2ff; border-left-color: var(--brand-accent); }
+    
+    .inv-id { font-family: 'Lexend', sans-serif; font-weight: 700; color: var(--text-main); margin-bottom: 4px; transition: color 0.2s;}
+    .inv-list-item.selected .inv-id { color: var(--brand-accent); }
+    
+    .inv-details { font-size: 0.8rem; color: var(--text-muted); }
+    .inv-status-badge { background: #f1f5f9; color: var(--text-muted); padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; font-family: 'Lexend', sans-serif; transition: all 0.2s;}
+    .inv-list-item.selected .inv-status-badge { background: var(--brand-accent); color: white; box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3); }
+
+    /* Alerts */
+    .custom-alert { border-radius: 14px; font-family: 'Lexend', sans-serif; font-size: 0.9rem; padding: 16px; margin-bottom: 24px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); animation: fadeUpItem 0.4s ease forwards; }
+    .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; }
+    .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+
+    @keyframes slideUp { 0% { opacity: 0; transform: translateY(30px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUpItem { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="mobile-app">
+  <div class="bg-glow"></div>
+
+  <!-- Navigation Container -->
+  <div id="navigation-container"></div>
+
+  <div class="main-scroll-area">
+    
+    <div class="page-header">
+      <h1 class="page-title"><i class="bi bi-camera-fill text-primary" style="color: var(--brand-accent);"></i> Scan & Update</h1>
+      <p class="page-subtitle">Scan barcodes to log milestones and assign carriers instantly.</p>
+    </div>
+
+    <!-- GLOBAL ALERT -->
+    <div id="booking-alert" class="custom-alert"></div>
+
+    <!-- SEGMENTED TABS -->
+    <div class="segment-tabs">
+      <button type="button" class="seg-btn active" onclick="switchTab('single', this)"><i class="bi bi-box"></i> Single</button>
+      <button type="button" class="seg-btn" onclick="switchTab('bulk', this)"><i class="bi bi-boxes"></i> Bulk</button>
+      <button type="button" class="seg-btn" onclick="switchTab('consol', this)"><i class="bi bi-layers"></i> Master</button>
+      <button type="button" class="seg-btn" onclick="switchTab('carrier', this)"><i class="bi bi-airplane-engines"></i> Carrier</button>
+    </div>
+
+    <div class="content-card">
+      
+      <!-- 1. SINGLE UPDATE -->
+      <div id="tab-single" class="tab-content active">
+        <div class="input-group">
+          <label class="input-label">Booking ID / AWB <span style="color: #dc2626;">*</span></label>
+          <div class="input-with-btn">
+            <input type="number" id="scanSingleId" class="minimal-input" placeholder="Enter or scan barcode..." autocomplete="off">
+            <button class="btn-scan-input" onclick="triggerScanner('scanSingleId')"><i class="bi bi-camera"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. BULK UPDATE -->
+      <div id="tab-bulk" class="tab-content">
+        <div class="input-group">
+          <label class="input-label">Multiple Booking IDs <span style="color: #dc2626;">*</span></label>
+          <div class="input-with-btn">
+            <textarea id="scanBulkIds" class="minimal-input" placeholder="Scan continuously or select from list below..." autocomplete="off"></textarea>
+            <button class="btn-scan-input" style="height: auto;" onclick="triggerScanner('scanBulkIds', true)"><i class="bi bi-camera"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MASTER/CONSOL UPDATE -->
+      <div id="tab-consol" class="tab-content">
+        <div class="input-group">
+          <label class="input-label">Master Consolidation ID <span style="color: #dc2626;">*</span></label>
+          <div class="input-with-btn">
+            <input type="text" id="scanConsolId" class="minimal-input" placeholder="Scan Master Bag barcode..." autocomplete="off">
+            <button class="btn-scan-input" onclick="triggerScanner('scanConsolId')"><i class="bi bi-camera"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. CARRIER ASSIGNMENT MODULE -->
+      <div id="tab-carrier" class="tab-content">
+        <div class="input-group">
+          <label class="input-label">Booking / Master ID <span style="color: #dc2626;">*</span></label>
+          <div class="input-with-btn">
+            <input type="number" id="carrierId" class="minimal-input" placeholder="Scan Item or Master Bag..." autocomplete="off">
+            <button class="btn-scan-input" onclick="triggerScanner('carrierId')"><i class="bi bi-camera"></i></button>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Forwarding Agent <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="fwdAgent" class="minimal-input" placeholder="e.g., DHL, Oman Air">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Carrier Docket / Ref <span style="color: #dc2626;">*</span></label>
+          <div class="input-with-btn">
+            <input type="text" id="fwdDocket" class="minimal-input" placeholder="Agent AWB...">
+            <button class="btn-scan-input" style="background: var(--text-muted); box-shadow: none;" onclick="triggerScanner('fwdDocket')"><i class="bi bi-camera"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border: 0; border-bottom: 1px dashed var(--border-color); margin: 24px 0;">
+
+      <!-- Shared Milestone Fields -->
+      <div class="input-group">
+        <label class="input-label">New Status Milestone <span style="color: #dc2626;">*</span></label>
+        <select id="scanStatus" name="shipping_milestone" class="minimal-input status-select" required>
+          <option value="" disabled selected>Select Milestone...</option>
+
+          <optgroup label="Booking & Pickup">
+            <option value="Shipment Booked">Shipment Booked</option>
+            <option value="Awaiting Pickup">Awaiting Pickup</option>
+            <option value="Picked Up">Picked Up</option>
+          </optgroup>
+
+          <optgroup label="Origin Hub Processing">
+            <option value="Arrived at Origin Hub">Arrived at Origin Hub</option>
+            <option value="Sorting in Progress">Sorting in Progress</option>
+            <option value="Consolidated for Shipment">Consolidated for Shipment</option>
+          </optgroup>
+
+          <optgroup label="Forwarding & Carrier">
+            <option value="Assigned Forwarding Agent">Assigned Forwarding Agent</option>
+            <option value="Handed Over to Agent">Handed Over to Forwarding Agent</option>
+            <option value="Dispatched to Carrier">Dispatched to Carrier</option>
+            <option value="Arrived at Departure Port">Arrived at Port/Airport of Departure</option>
+          </optgroup>
+
+          <optgroup label="Customs (Origin)">
+            <option value="Awaiting Export Customs">Awaiting Export Customs</option>
+            <option value="Export Customs Cleared">Export Customs Cleared</option>
+          </optgroup>
+
+          <optgroup label="In-Transit">
+            <option value="Departed Origin">Departed Origin</option>
+            <option value="In-Transit">In-Transit (Main Leg)</option>
+            <option value="In-Transit Transit Hub">Arrived at Transit Hub</option>
+          </optgroup>
+
+          <optgroup label="Destination & Customs">
+            <option value="Arrived at Destination Port">Arrived at Destination Port/Airport</option>
+            <option value="Awaiting Import Customs">Awaiting Import Customs Clearance</option>
+            <option value="Import Customs Cleared">Import Customs Cleared</option>
+          </optgroup>
+
+          <optgroup label="Last Mile & Delivery">
+            <option value="Arrived at Destination Hub">Arrived at Destination Hub</option>
+            <option value="Out for Delivery">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+          </optgroup>
+
+          <optgroup label="Exceptions & Holds">
+            <option value="On Hold">On Hold (General)</option>
+            <option value="Held at Customs">Held at Customs</option>
+            <option value="Delivery Attempted">Delivery Attempted (Rescheduling)</option>
+            <option value="Returned to Facility">Returned to Hub/Facility</option>
+            <option value="Returned to Sender">Returned to Sender</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <div class="input-group" style="flex: 1;">
+          <label class="input-label">Location (Opt)</label>
+          <input type="text" id="scanLocation" class="minimal-input" placeholder="Default: Branch">
+        </div>
+        <div class="input-group" style="flex: 1;">
+          <label class="input-label">Backdate (Opt)</label>
+          <input type="datetime-local" id="scanDate" class="minimal-input">
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button id="updateBtn" class="btn-primary-custom" onclick="submitStatusUpdate()">
+        <i class="bi bi-cloud-arrow-up-fill"></i> <span>Commit Record</span>
+      </button>
+
+    </div>
+
+    <!-- INVENTORY SECTION -->
+    <div class="page-header" style="margin-top: 32px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h2 class="page-title" style="font-size: 1.3rem;"><i class="bi bi-box-seam"></i> Current Inventory</h2>
+        <p class="page-subtitle">Pending at <strong id="inventoryBranchName" style="color: var(--text-main);">---</strong></p>
+      </div>
+      <button onclick="loadInventory()" style="background: white; border: 1px solid var(--border-color); color:var(--brand-accent); font-size:1.2rem; cursor:pointer; width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: transform 0.2s;"><i class="bi bi-arrow-clockwise"></i></button>
+    </div>
+    
+    <div class="content-card" style="padding: 0; overflow: hidden; margin-bottom: 0;">
+       <!-- Loading State -->
+       <div id="inventoryLoading" style="padding: 40px; text-align: center; color: var(--text-muted);">
+          <i class="bi bi-arrow-repeat" style="animation: spin 1s linear infinite; display: inline-block; font-size: 2.5rem; color: var(--brand-accent);"></i>
+          <p style="margin-top: 12px; font-size: 0.95rem; font-family: 'Lexend', sans-serif;">Fetching branch stock...</p>
+       </div>
+       
+       <!-- Empty State -->
+       <div id="inventoryEmpty" class="d-none" style="padding: 50px 20px; text-align: center; color: var(--text-muted);">
+          <i class="bi bi-check-circle" style="font-size: 3.5rem; color: var(--success-color); display: block; margin-bottom: 16px;"></i>
+          <p style="margin: 0; font-size: 1.1rem; font-family: 'Lexend', sans-serif; color: var(--text-main); font-weight: 600;">All Clear!</p>
+          <p style="margin: 8px 0 0 0; font-size: 0.9rem;">No pending packages found at this location.</p>
+       </div>
+       
+       <!-- List Container -->
+       <div id="inventoryList" class="d-none" style="max-height: 400px; overflow-y: auto;">
+          <!-- Items injected via JavaScript -->
+       </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Connect nav.js -->
+<script src="/nav.js"></script>
+
+  <script src="/js/api-client.js"></script>
+  <script src="/js/mstatusupdate.js"></script>
+
+</body>
+</html>

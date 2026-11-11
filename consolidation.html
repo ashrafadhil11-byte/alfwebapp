@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hub Consolidation - Al-Farha Cargo</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f8fafc">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Session & Auto-Redirect Guard -->
+  <script src="/auth-guard.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <style>
+  :root { --bg-color: #fafafa; --card-bg: #ffffff; --border-color: #eaeaea; --text-main: #111827; --text-muted: #6b7280; --brand-accent: #6f42c1; --sidebar-width: 260px; --sidebar-collapsed-width: 80px; }
+  .app-layout { display: flex; min-height: 100vh; font-family: 'Comfortaa', cursive; color: var(--text-main); background-color: var(--bg-color); }
+  
+  /* Sidebar */
+  .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; height: 100vh; padding: 32px 20px; display: flex; flex-direction: column; z-index: 100; transition: width 0.3s ease; }
+  .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; padding: 0 5px; }
+  .sidebar-brand { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.25rem; display: flex; align-items: center; gap: 12px; }
+  .sidebar-brand i { color: var(--brand-accent); font-size: 1.5rem; }
+  .nav-menu { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .nav-item { font-family: 'Lexend', sans-serif; font-size: 0.95rem; font-weight: 500; padding: 14px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; color: var(--text-muted); transition: all 0.2s ease; }
+  .nav-item i { font-size: 1.2rem; min-width: 30px; }
+  .nav-item:hover { color: var(--brand-accent); background-color: #faf5ff; }
+  .nav-item.active { color: var(--brand-accent); background-color: #f3e8ff; }
+  .sidebar-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; border-top: 1px solid var(--border-color); }
+  .user-details { display: flex; flex-direction: column; }
+  .user-name { font-weight: 600; font-size: 0.9rem; }
+  .user-branch { font-size: 0.75rem; color: var(--text-muted); }
+  
+  /* Main Content */
+  .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 48px 5%; width: calc(100% - var(--sidebar-width)); }
+  .page-header { margin-bottom: 40px; }
+  .page-title { font-family: 'Lexend', sans-serif; font-weight: 300; font-size: 2.2rem; letter-spacing: -0.03em; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .page-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+  
+  /* Split Layout */
+  .split-grid { display: grid; grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
+  @media (min-width: 1100px) { .split-grid { grid-template-columns: 1.2fr 1fr; align-items: start; } }
+
+  /* Form & UI Elements */
+  .content-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.02); }
+  .section-title { font-family: 'Lexend', sans-serif; font-weight: 500; font-size: 1.1rem; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
+  
+  .input-group { display: flex; flex-direction: column; margin-bottom: 20px; }
+  .input-label { font-family: 'Lexend', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .minimal-input { border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border-color); background-color: #f8fafc; font-family: 'Comfortaa', cursive; font-weight: 600; color: var(--text-main); width: 100%; font-size: 0.95rem; transition: all 0.2s ease; box-sizing: border-box; }
+  .minimal-input:focus { outline: none; border-color: var(--brand-accent); background-color: #ffffff; }
+  textarea.minimal-input { min-height: 140px; resize: vertical; line-height: 1.6; }
+  select.minimal-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; padding-right: 2.5rem; }
+
+  .btn-primary-custom { font-family: 'Lexend', sans-serif; font-weight: 500; background-color: var(--brand-accent); color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 1rem; margin-top: 10px; }
+  .btn-primary-custom:hover { background-color: #5a32a3; transform: translateY(-2px); }
+  .btn-primary-custom:disabled { background-color: #a0aec0; cursor: not-allowed; transform: none; }
+  
+  .custom-alert { border-radius: 12px; font-family: 'Lexend', sans-serif; font-size: 0.9rem; padding: 16px; margin-bottom: 24px; }
+
+  /* --- INVENTORY SCROLL TABLE --- */
+  /* Added strict max-height to ensure scrolling works beautifully */
+  .table-container { max-height: 400px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+  /* Custom scrollbar for webkit browsers */
+  .table-container::-webkit-scrollbar { width: 8px; }
+  .table-container::-webkit-scrollbar-track { background: #f8fafc; border-radius: 0 12px 12px 0; }
+  .table-container::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 8px; }
+  
+  .minimal-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
+  .minimal-table th { font-family: 'Lexend', sans-serif; padding: 14px 16px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; background-color: #fdfdfd; z-index: 10; }
+  .minimal-table td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: middle; transition: background 0.2s ease; }
+  
+  /* Clickable styling specifically for the inventory side */
+  .inventory-row { cursor: pointer; }
+  .inventory-row:hover td { background-color: #faf5ff; }
+  
+  .minimal-table tr:last-child td { border-bottom: none; }
+  .status-badge { background: #f3f4f6; color: #4b5563; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
+  .counter-badge { background-color: var(--brand-accent); color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; float: right; font-weight: bold; }
+  
+  .metric-pill { background: #e0e7ff; color: #4338ca; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; font-family: 'Lexend', sans-serif; display: inline-flex; align-items: center; gap: 4px;}
+  .metric-pill.weight { background: #ecfdf5; color: #059669; }
+
+  /* Responsive Mobile Adaptation for Shared Views */
+  @media (max-width: 900px) {
+    .sidebar { display: none !important; }
+    .main-content, .main-content.expanded {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding: 20px 16px 90px 16px !important;
+    }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-layout">
+  
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-brand"><i class="bi bi-box-seam-fill"></i> <span class="brand-text">Al-Farha</span></div></div>
+        <nav class="nav-menu">
+      <div class="nav-item " onclick="returnToDashboard()" title="Dashboard"><i class="bi bi-grid"></i> <span class="nav-text">Dashboard</span></div>
+      <div class="nav-item " onclick="loadBookingForm()" title="New Booking"><i class="bi bi-plus-circle"></i> <span class="nav-text">New Booking</span></div>
+      <div class="nav-item " onclick="loadTransfers()" title="Inventory"><i class="bi bi-arrow-left-right"></i> <span class="nav-text">Inventory</span></div>
+      <div class="nav-item " onclick="loadStatusUpdate()" title="Update Status"><i class="bi bi-geo-alt"></i> <span class="nav-text">Update Status</span></div>
+      <div class="nav-item active" id="nav-consol" onclick="loadConsolidation()" title="Consolidations"><i class="bi bi-layers"></i> <span class="nav-text">Consolidations</span></div>
+      <div class="nav-item d-none " id="nav-admin" onclick="loadAdminPanel()" title="Master Control"><i class="bi bi-shield-lock"></i> <span class="nav-text">Master Control</span></div>
+    </nav>
+    <div class="sidebar-footer"><div class="user-details"><span class="user-name" id="navName">Loading...</span><span class="user-branch" id="navBranch">Branch</span></div></div>
+  </aside>
+
+  <main class="main-content" id="mainContent">
+    
+    <div class="page-header">
+      <h1 class="page-title"><i class="bi bi-layers text-primary"></i> Hub Consolidation</h1>
+      <p class="page-subtitle">Group multiple child packages under a single Master AWB or Consolidation Bag.</p>
+    </div>
+
+    <div class="split-grid">
+      
+      <div class="content-card">
+        <h3 class="section-title"><i class="bi bi-bag-plus"></i> Create Master Bag</h3>
+        <div id="consol-alert" class="alert d-none custom-alert" role="alert"></div>
+
+        <div class="input-group">
+          <label class="input-label">Master Consolidation ID / Bag Tag <span style="color: #dc2626;">*</span></label>
+          <input type="text" id="masterAwb" class="minimal-input" placeholder="e.g., MASTER-DXB-001" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Child Bookings / AWBs <span id="childCounter" class="counter-badge">0</span></label>
+          <textarea id="childAwbs" class="minimal-input" placeholder="Scan barcodes sequentially, paste IDs, or click items from the inventory list..." oninput="updateCounter()"></textarea>
+          <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 6px;">Separate multiple IDs with a comma or new line.</small>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Destination Hub (Optional)</label>
+          <select id="destinationBranch" class="minimal-input">
+            <option value="" selected>Routing destination...</option>
+            </select>
+        </div>
+
+        <button id="createBtn" class="btn-primary-custom" onclick="submitConsolidation()">
+          <i class="bi bi-check2-all"></i> Create Consolidation
+        </button>
+      </div>
+
+      <div class="content-card" style="padding: 24px;">
+        <h3 class="section-title"><i class="bi bi-list-check text-success"></i> Branch Inventory</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Consolidated packages are automatically removed from this list.</p>
+        
+        <div class="table-container">
+          <table class="minimal-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Destination</th>
+                <th>Current Status</th>
+              </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+              <tr><td colspan="3" style="text-align: center; padding: 30px;"><span class="spinner-border spinner-border-sm"></span> Fetching inventory...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <h3 class="section-title"><i class="bi bi-clock-history"></i> Recent Consolidations Manifest</h3>
+      <div style="overflow-x: auto;">
+        <table class="minimal-table">
+          <thead>
+            <tr>
+              <th>Master AWB / Bag Tag</th>
+              <th>Destination</th>
+              <th>Contents Summary</th>
+              <th>Date Created</th>
+            </tr>
+          </thead>
+          <tbody id="recentConsolTableBody">
+            <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;"><span class="spinner-border spinner-border-sm"></span> Loading manifest...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+  <!-- Modular Application Scripts -->
+  <script src="/js/api-client.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/nav.js"></script>
+  <script src="/js/consolidation.js"></script>
+</body>
+</html>
