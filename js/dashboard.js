@@ -206,20 +206,24 @@ function renderRecentShipmentsTable() {
 
   tbody.innerHTML = filtered.map(function (b) {
     var sUpper = String(b.status || '').toUpperCase();
-    var badgeStyle = "background: #293B4A; color: #FFFFFF;";
+    var badgeStyle = "background: #EEF3F7; color: #293B4A;";
+    var dotColor = "#293B4A";
     if (sUpper.includes('DELIVERED')) {
-      badgeStyle = "background: #713280; color: #FFFFFF;";
+      badgeStyle = "background: #F6EFF8; color: #713280;";
+      dotColor = "#713280";
     } else if (sUpper.includes('RETURN') || sUpper.includes('CANCEL') || sUpper.includes('FAIL') || sUpper.includes('HOLD') || sUpper.includes('EXCEPTION')) {
-      badgeStyle = "background: #291D30; color: #F5EDE1;";
+      badgeStyle = "background: #FDF2F4; color: #9F1239;";
+      dotColor = "#E11D48";
     } else if (sUpper.includes('BOOK') || sUpper.includes('PENDING')) {
-      badgeStyle = "background: #EE7E05; color: #1E1E1C;";
+      badgeStyle = "background: #FFF6EB; color: #9A4D00;";
+      dotColor = "#EE7E05";
     }
     var safeId = String(b.id).replace(/'/g, "\'");
     return '<tr onclick="trackSpecificAwb(\'' + safeId + '\')">' +
       '<td><span class="awb-code">' + b.id + '</span></td>' +
-      '<td style="font-weight: 600;">' + b.destination + '</td>' +
-      '<td><span class="status-badge" style="' + badgeStyle + '">' + b.status + '</span></td>' +
-      '<td style="text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--brand-purple);">View &rarr;</td>' +
+      '<td style="font-weight: 500; color: var(--text-primary);">' + b.destination + '</td>' +
+      '<td><span class="status-badge" style="' + badgeStyle + '"><span class="status-dot" style="background:' + dotColor + ';"></span>' + b.status + '</span></td>' +
+      '<td style="text-align: right; font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Details &rarr;</td>' +
       '</tr>';
   }).join('');
 }
