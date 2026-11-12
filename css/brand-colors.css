@@ -1,0 +1,74 @@
+/**
+ * css/brand-colors.css
+ * Official Al-Farha Cargo Brand Guidelines (November 2026 — Light Theme Edition)
+ * Balance: ~70% Neutral (Warm Beige #F5EDE1 & White #FFFFFF), ~20% Brand Purple (#713280) / Charcoal Blue (#293B4A), ~10% Cargo Orange (#EE7E05)
+ */
+
+:root {
+  /* Official Brand Palette */
+  --alf-cargo-orange: #EE7E05;
+  --alf-cargo-orange-hover: #D66F00;
+  --alf-cargo-orange-soft: #FEF3E6;
+  --alf-brand-purple: #713280;
+  --alf-brand-purple-hover: #5B2668;
+  --alf-brand-purple-soft: #F5EEF7;
+  --alf-charcoal: #1E1E1C;
+  --alf-warm-beige: #F5EDE1;
+  --alf-warm-beige-light: #FAF6F0;
+  --alf-deep-plum: #291D30;
+  --alf-charcoal-blue: #293B4A;
+  --alf-white: #FFFFFF;
+
+  /* Mapped Application Tokens (Light Theme) */
+  --bg-color: #F5EDE1;
+  --bg-canvas: #F5EDE1;
+  --card-bg: #FFFFFF;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #FAF6F0;
+  --border-color: #E5D9C8;
+  --border-hairline: #E5D9C8;
+  --border-strong: #D2C2AC;
+  --text-main: #1E1E1C;
+  --text-primary: #1E1E1C;
+  --text-secondary: #293B4A;
+  --text-muted: #5C5852;
+  --brand-accent: #713280;
+  --brand-primary: #713280;
+  --brand-dark: #291D30;
+  --brand-light: #F5EEF7;
+  --action-orange: #EE7E05;
+}
+
+/* Official Primary Action Button: Cargo Orange (#EE7E05) with Charcoal (#1E1E1C) Bold Text per Page 4 ("Charcoal on orange") */
+.btn-brand-orange,
+.btn-primary-custom {
+  background: #EE7E05 !important;
+  color: #1E1E1C !important;
+  font-weight: 700 !important;
+  border: 1px solid #D66F00 !important;
+  box-shadow: 0 4px 14px rgba(238, 126, 5, 0.25) !important;
+}
+.btn-brand-orange:hover,
+.btn-primary-custom:hover {
+  background: #FF8C1A !important;
+  color: #1E1E1C !important;
+}
+
+/* Supporting Brand Purple Button: White on Purple (#713280) per Page 4 ("White on purple") */
+.btn-brand-purple {
+  background: #713280 !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  border: none !important;
+}
+.btn-brand-purple:hover {
+  background: #5B2668 !important;
+  color: #FFFFFF !important;
+}
+
+/* Tracking Header & Digital Header Banner: White on Charcoal Blue (#293B4A) with Cargo Orange (#EE7E05) Accent per Page 1 & Page 5 */
+.charcoal-blue-header {
+  background: #293B4A !important;
+  color: #FFFFFF !important;
+  border-bottom: 4px solid #EE7E05 !important;
+}

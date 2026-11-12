@@ -21,12 +21,12 @@
 
   <style>
   :root { 
-    --bg-color: #f8fafc; 
+    --bg-color: #F5EDE1; 
     --card-bg: #ffffff; 
-    --border-color: #e2e8f0; 
-    --text-main: #0f172a; 
-    --text-muted: #64748b; 
-    --brand-accent: #4f46e5; 
+    --border-color: #E5D9C8; 
+    --text-main: #1E1E1C; 
+    --text-muted: #5C5852; 
+    --brand-accent: #713280; 
     --sidebar-width: 260px; 
     --sidebar-collapsed-width: 80px; 
   }
@@ -54,7 +54,7 @@
   .nav-item { font-family: 'Lexend', sans-serif; font-size: 0.9rem; font-weight: 500; padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; color: var(--text-muted); transition: all 0.2s ease; white-space: nowrap; }
   .nav-item i { font-size: 1.2rem; min-width: 30px; }
   .nav-item:hover { color: var(--brand-accent); background-color: #f5f3ff; transform: translateX(4px); }
-  .nav-item.active { color: var(--brand-accent); background-color: #eef2ff; font-weight: 600; }
+  .nav-item.active { color: var(--brand-accent); background-color: #F5EEF7; font-weight: 600; }
   .sidebar.collapsed .nav-text { display: none; }
   .sidebar.collapsed .nav-item { justify-content: center; padding: 14px 0; }
   .sidebar.collapsed .nav-item i { min-width: auto; }
@@ -86,7 +86,7 @@
   .content-card.active { display: block; }
   
   .form-section-title { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1.1rem; color: var(--text-main); margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
-  .form-section-title i { color: var(--brand-accent); background: #eef2ff; padding: 8px; border-radius: 10px; font-size: 1rem; }
+  .form-section-title i { color: var(--brand-accent); background: #F5EEF7; padding: 8px; border-radius: 10px; font-size: 1rem; }
   
   .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 32px; }
   .form-grid-3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
@@ -95,7 +95,7 @@
   .input-label { font-family: 'Lexend', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
   .minimal-input { width: 100%; padding: 16px 20px; border-radius: 14px; border: 2px solid #f1f5f9; background-color: #f8fafc; font-family: 'Lexend', sans-serif; font-weight: 500; color: var(--text-main); font-size: 0.95rem; transition: all 0.3s ease; outline: none; }
   .minimal-input::placeholder { color: #94a3b8; font-weight: 400; }
-  .minimal-input:focus { background-color: #ffffff; border-color: var(--brand-accent); box-shadow: 0 0 0 4px #eef2ff; }
+  .minimal-input:focus { background-color: #ffffff; border-color: var(--brand-accent); box-shadow: 0 0 0 4px #F5EEF7; }
   
   select.minimal-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1.2rem center; background-size: 1em; padding-right: 3rem; }
 
@@ -103,7 +103,7 @@
 
   /* --- BULK UPLOAD ZONE --- */
   .upload-zone { border: 2px dashed #cbd5e0; background-color: #f8fafc; border-radius: 20px; padding: 60px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 24px; }
-  .upload-zone:hover { background-color: #eef2ff; border-color: var(--brand-accent); transform: translateY(-2px); }
+  .upload-zone:hover { background-color: #F5EEF7; border-color: var(--brand-accent); transform: translateY(-2px); }
   .upload-icon { font-size: 3.5rem; color: var(--brand-accent); margin-bottom: 16px; opacity: 0.8; transition: opacity 0.3s; }
   .upload-zone:hover .upload-icon { opacity: 1; }
   .upload-text { font-family: 'Lexend', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
@@ -126,7 +126,7 @@
   .btn-secondary-custom:hover { background-color: #e2e8f0; color: var(--text-main); }
   
   .btn-outline-custom { font-family: 'Lexend', sans-serif; font-weight: 600; background-color: transparent; color: var(--text-main); border: 2px solid #e2e8f0; padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;}
-  .btn-outline-custom:hover { border-color: var(--brand-accent); color: var(--brand-accent); background: #eef2ff;}
+  .btn-outline-custom:hover { border-color: var(--brand-accent); color: var(--brand-accent); background: #F5EEF7;}
 
   .custom-alert { border-radius: 16px; font-family: 'Lexend', sans-serif; font-size: 0.95rem; padding: 16px 20px; margin-bottom: 24px; max-width: 1000px; display: none; align-items: center; gap: 12px; }
   .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
@@ -160,6 +160,7 @@
     .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
   }
 </style>
+  <link rel="stylesheet" href="/css/brand-colors.css">
 </head>
 <body>
 
@@ -210,10 +211,10 @@
 
     <div id="tab-single" class="content-card active">
       
-      <div style="background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 16px; padding: 16px 20px; margin-bottom: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+      <div style="background: #F5EEF7; border: 1px solid #c7d2fe; border-radius: 16px; padding: 16px 20px; margin-bottom: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
         <div>
-          <div style="font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; color: #3730a3;"><i class="bi bi-lightning-charge-fill"></i> Auto-Fill from Al-Farha Online (api.alfarhaonline.com)</div>
-          <div style="font-size: 0.8rem; color: #4f46e5;">Enter or scan an existing Al-Farha Online Order ID to populate all fields automatically.</div>
+          <div style="font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.95rem; color: #291D30;"><i class="bi bi-lightning-charge-fill"></i> Auto-Fill from Al-Farha Online (api.alfarhaonline.com)</div>
+          <div style="font-size: 0.8rem; color: #713280;">Enter or scan an existing Al-Farha Online Order ID to populate all fields automatically.</div>
         </div>
         <div style="display: flex; gap: 8px; flex: 1; min-width: 260px; max-width: 420px;">
           <input type="text" id="quickOnlineOrderInput" class="minimal-input" style="padding: 10px 14px; background: #ffffff; border-color: #c7d2fe;" placeholder="Order / Booking ID (e.g., 0620366)..." onkeypress="if(event.key==='Enter') fetchAndFillSingleForm()">

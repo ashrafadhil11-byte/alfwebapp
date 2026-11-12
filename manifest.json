@@ -1,11 +1,11 @@
 {
-  "name": "Al-Farha Cargo",
+  "name": "Al-Farha Cargo — Courier & Parcel Service",
   "short_name": "Al-Farha",
-  "description": "Enterprise Logistics and Fleet Management System",
+  "description": "Al-Farha Cargo Enterprise Logistics & Parcel Service",
   "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#4f46e5",
+  "background_color": "#F5EDE1",
+  "theme_color": "#713280",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

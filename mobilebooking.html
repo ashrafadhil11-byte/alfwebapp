@@ -20,12 +20,12 @@
 
   <style>
     :root { 
-      --bg-color: #f8fafc; 
+      --bg-color: #F5EDE1; 
       --card-bg: #ffffff; 
-      --border-color: #e2e8f0; 
-      --text-main: #0f172a; 
-      --text-muted: #64748b; 
-      --brand-accent: #4f46e5; 
+      --border-color: #E5D9C8; 
+      --text-main: #1E1E1C; 
+      --text-muted: #5C5852; 
+      --brand-accent: #713280; 
       --success-color: #10b981;
       --whatsapp-color: #25D366;
       --bottom-nav-height: 65px;
@@ -54,7 +54,7 @@
     .content-card { display: none; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); animation: slideUp 0.4s ease-out backwards; margin-bottom: 20px; }
     .content-card.active { display: block; }
     .form-section-title { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text-main); margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; }
-    .form-section-title i { color: var(--brand-accent); background: #eef2ff; padding: 6px; border-radius: 8px; font-size: 0.9rem; }
+    .form-section-title i { color: var(--brand-accent); background: #F5EEF7; padding: 6px; border-radius: 8px; font-size: 0.9rem; }
     
     /* Inputs */
     .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
@@ -133,6 +133,7 @@
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
+  <link rel="stylesheet" href="/css/brand-colors.css">
 </head>
 <body>
 
@@ -290,7 +291,7 @@
 
         <div class="pc-row">
           <span class="pc-lbl"><i class="bi bi-box-seam"></i> Cargo Type</span>
-          <span class="pc-val"><span id="fpCargoType" style="background:#eef2ff; color:var(--brand-accent); padding:4px 8px; border-radius:6px; font-size:0.8rem;">---</span></span>
+          <span class="pc-val"><span id="fpCargoType" style="background:#F5EEF7; color:var(--brand-accent); padding:4px 8px; border-radius:6px; font-size:0.8rem;">---</span></span>
         </div>
         <div class="pc-row">
           <span class="pc-lbl"><i class="bi bi-boxes"></i> Weight & PCS</span>

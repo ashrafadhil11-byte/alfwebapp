@@ -48,7 +48,7 @@ function injectTrackingSystem() {
 
       /* --- SMART STEPPER --- */
       .trk-stepper { display: flex; justify-content: space-between; position: relative; margin-bottom: 8px; }
-      .trk-stepper-track { position: absolute; top: 12px; left: 15px; right: 15px; height: 4px; background: #e2e8f0; z-index: 1; border-radius: 2px; }
+      .trk-stepper-track { position: absolute; top: 12px; left: 15px; right: 15px; height: 4px; background: #E5D9C8; z-index: 1; border-radius: 2px; }
       .trk-stepper-progress { height: 100%; width: 0%; background: var(--brand-accent); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 2px; }
       
       .trk-step { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; }
@@ -79,7 +79,7 @@ function injectTrackingSystem() {
       .trk-timeline { position: relative; padding-left: 0; margin-top: 16px; }
       
       /* Vertical Line (Centered at 25px) */
-      .trk-timeline::before { content: ''; position: absolute; left: 24px; top: 12px; bottom: 30px; width: 2px; background: #e2e8f0; }
+      .trk-timeline::before { content: ''; position: absolute; left: 24px; top: 12px; bottom: 30px; width: 2px; background: #E5D9C8; }
       
       /* Text Container */
       .trk-item { position: relative; padding-bottom: 28px; padding-left: 56px; opacity: 0; animation: fadeUpIn 0.6s ease forwards; }

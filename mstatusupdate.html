@@ -23,13 +23,13 @@
 
   <style>
     :root { 
-      --bg-color: #f8fafc; 
+      --bg-color: #F5EDE1; 
       --card-bg: #ffffff; 
-      --border-color: #e2e8f0; 
-      --text-main: #0f172a; 
-      --text-muted: #64748b; 
-      --brand-accent: #4f46e5; 
-      --brand-dark: #3730a3;
+      --border-color: #E5D9C8; 
+      --text-main: #1E1E1C; 
+      --text-muted: #5C5852; 
+      --brand-accent: #713280; 
+      --brand-dark: #291D30;
       --success-color: #10b981;
       --bottom-nav-height: 65px;
     }
@@ -75,7 +75,7 @@
     .btn-scan-input { background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-dark) 100%); color: white; border: none; border-radius: 14px; width: 56px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; flex-shrink: 0; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
     .btn-scan-input:active { transform: scale(0.92); box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3); }
     
-    .status-select { font-weight: 700; color: var(--brand-accent); border-color: #e0e7ff; background-color: #eef2ff; }
+    .status-select { font-weight: 700; color: var(--brand-accent); border-color: #e0e7ff; background-color: #F5EEF7; }
     .status-select:focus { border-color: var(--brand-accent); }
     .status-select optgroup { font-family: 'Lexend', sans-serif; font-weight: 700; color: var(--text-muted); font-style: normal; }
     .status-select option { font-weight: 500; color: var(--text-main); }
@@ -91,7 +91,7 @@
     .inv-list-item:active { background-color: #f8fafc; }
     
     /* Selected state for bulk mode */
-    .inv-list-item.selected { background-color: #eef2ff; border-left-color: var(--brand-accent); }
+    .inv-list-item.selected { background-color: #F5EEF7; border-left-color: var(--brand-accent); }
     
     .inv-id { font-family: 'Lexend', sans-serif; font-weight: 700; color: var(--text-main); margin-bottom: 4px; transition: color 0.2s;}
     .inv-list-item.selected .inv-id { color: var(--brand-accent); }
@@ -112,6 +112,7 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
+  <link rel="stylesheet" href="/css/brand-colors.css">
 </head>
 <body>
 
