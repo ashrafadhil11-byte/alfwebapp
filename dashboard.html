@@ -3,137 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Command Center Dashboard — Al-Farha Cargo</title>
+  <title>Al-Farha Cargo — Branch Operations</title>
 
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0f172a">
+  <meta name="theme-color" content="#F5EDE1">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <!-- Session & Auto-Redirect Guard -->
   <script src="/auth-guard.js"></script>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brand-colors.css">
 
   <style>
     :root {
-      --bg-canvas: #f8fafc;
-      --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f9;
-      --border-hairline: #e2e8f0;
-      --border-strong: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #64748b;
-      --brand-primary: #4f46e5;
-      --brand-primary-hover: #4338ca;
-      --brand-soft: #eef2ff;
-      --emerald-primary: #10b981;
-      --emerald-soft: #ecfdf5;
-      --amber-primary: #f59e0b;
-      --amber-soft: #fffbeb;
-      --rose-primary: #ef4444;
-      --rose-soft: #fef2f2;
-      --sidebar-width: 268px;
-      --sidebar-collapsed-width: 80px;
+      /* Official Al-Farha Cargo Brand Palette (Nov 2026) */
+      --cargo-orange: #EE7E05;
+      --brand-purple: #713280;
+      --charcoal: #1E1E1C;
+      --warm-beige: #F5EDE1;
+      --warm-beige-soft: #FAF6F0;
+      --deep-plum: #291D30;
+      --charcoal-blue: #293B4A;
+      --white: #FFFFFF;
+
+      --border-line: #E2D7C5;
+      --border-strong: #CBBBA4;
+      --text-body: #1E1E1C;
+      --text-muted: #665E54;
+      --sidebar-w: 256px;
+      --sidebar-collapsed-w: 76px;
       --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-      --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
+
     body, html {
       margin: 0;
       padding: 0;
       height: 100vh;
       overflow: hidden;
-      background-color: var(--bg-canvas);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text-primary);
+      background-color: var(--warm-beige);
+      font-family: 'DM Sans', Arial, sans-serif;
+      color: var(--charcoal);
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Tactile Press Feedback (Emil Design Engineering) */
-    .btn-press {
-      transition: transform 150ms var(--ease-out), background-color 150ms ease, border-color 150ms ease, box-shadow 180ms var(--ease-out), color 150ms ease;
+    .d-none { display: none !important; }
+
+    /* Custom Dual-Tone Line Icons */
+    .alf-icon {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex-shrink: 0;
     }
-    .btn-press:active:not(:disabled) {
-      transform: scale(0.97);
+    .alf-icon .accent-stroke {
+      stroke: var(--cargo-orange);
+    }
+    .alf-icon .accent-fill {
+      fill: var(--cargo-orange);
+      stroke: none;
     }
 
-    /* Layout Shell */
+    /* App Layout */
     .app-layout {
       display: flex;
       height: 100vh;
       width: 100vw;
-      position: relative;
-      z-index: 1;
     }
 
-    /* Modern Dark Slate Sidebar */
+    /* Editorial Stationery Sidebar (White Paper, Charcoal Ink, Purple Kicker, Orange Bottom Bar) */
     .sidebar {
-      width: var(--sidebar-width);
-      background: linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%);
-      color: #f8fafc;
+      width: var(--sidebar-w);
+      background: var(--white);
+      border-right: 1px solid var(--border-line);
       height: 100vh;
-      padding: 24px 16px;
+      padding: 22px 18px;
       display: flex;
       flex-direction: column;
-      z-index: 100;
       flex-shrink: 0;
-      border-right: 1px solid rgba(255, 255, 255, 0.08);
-      transition: width 240ms var(--ease-drawer), padding 240ms var(--ease-drawer);
+      transition: width 220ms var(--ease-out), padding 220ms var(--ease-out);
     }
     .sidebar.collapsed {
-      width: var(--sidebar-collapsed-width);
-      padding: 24px 10px;
+      width: var(--sidebar-collapsed-w);
+      padding: 22px 12px;
     }
     .sidebar-header {
+      padding: 0 4px 18px 4px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-line);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 8px;
-      margin-bottom: 28px;
     }
-    .sidebar-brand {
-      font-family: 'Lexend', sans-serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #ffffff;
-      letter-spacing: -0.02em;
-    }
-    .brand-logo-box {
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-size: 1.2rem;
-      box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.55);
-      flex-shrink: 0;
-    }
-    .sidebar.collapsed .brand-text,
+    .sidebar.collapsed .brand-lockup-svg,
     .sidebar.collapsed .nav-text,
     .sidebar.collapsed .user-details,
-    .sidebar.collapsed .sidebar-section-label {
+    .sidebar.collapsed .sidebar-kicker {
       display: none;
     }
-    .sidebar-section-label {
-      font-family: 'Lexend', sans-serif;
+
+    .sidebar-kicker {
       font-size: 0.68rem;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #64748b;
-      padding: 0 12px;
-      margin: 12px 0 8px 0;
+      color: var(--brand-purple);
+      padding: 0 10px;
+      margin-bottom: 8px;
     }
 
     .nav-menu {
@@ -143,269 +126,231 @@
       flex: 1;
     }
     .nav-item {
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.86rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      padding: 11px 14px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 12px;
-      color: #94a3b8;
-      transition: transform 150ms var(--ease-out), background-color 150ms ease, color 150ms ease;
+      color: var(--charcoal);
+      transition: background-color 140ms ease, color 140ms ease, transform 140ms var(--ease-out);
       user-select: none;
     }
-    @media (hover: hover) and (pointer: fine) {
-      .nav-item:hover {
-        color: #ffffff;
-        background-color: rgba(255, 255, 255, 0.07);
-      }
+    .nav-item:hover {
+      background-color: var(--warm-beige-soft);
+      color: var(--brand-purple);
     }
     .nav-item:active {
       transform: scale(0.98);
     }
     .nav-item.active {
-      color: #ffffff;
-      background: linear-gradient(90deg, rgba(99, 102, 241, 0.28) 0%, rgba(99, 102, 241, 0.1) 100%);
-      border: 1px solid rgba(129, 140, 248, 0.35);
+      background-color: var(--brand-purple);
+      color: var(--white);
       font-weight: 600;
-      box-shadow: inset 3px 0 0 #818cf8;
     }
-    .nav-item i {
-      font-size: 1.15rem;
-      min-width: 24px;
-      text-align: center;
-    }
-    .nav-item.active i {
-      color: #818cf8;
+    .nav-item.active .alf-icon .accent-stroke {
+      stroke: var(--cargo-orange);
     }
 
     .sidebar-footer {
+      padding-top: 16px;
+      border-top: 1px solid var(--border-line);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      margin-top: auto;
+      gap: 8px;
     }
     .user-details {
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      min-width: 0;
     }
     .user-name {
-      font-family: 'Lexend', sans-serif;
-      font-weight: 600;
-      font-size: 0.82rem;
-      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--charcoal);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .user-branch {
-      font-size: 0.7rem;
-      color: #94a3b8;
+      font-size: 0.74rem;
+      color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .btn-logout {
-      background: rgba(239, 68, 68, 0.14);
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      color: #fca5a5;
+      background: var(--warm-beige-soft);
+      border: 1px solid var(--border-line);
+      color: var(--charcoal);
       width: 34px;
       height: 34px;
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 150ms var(--ease-out), background-color 150ms ease;
+      transition: background-color 140ms ease, color 140ms ease, transform 140ms var(--ease-out);
     }
     .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.28);
-      color: #ffffff;
+      background: var(--deep-plum);
+      color: var(--warm-beige);
+      border-color: var(--deep-plum);
     }
-    .btn-logout:active { transform: scale(0.95); }
+    .btn-logout:active { transform: scale(0.96); }
 
-    /* Main Command Workspace */
+    /* Main Workspace */
     .main-content {
       flex: 1;
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow-y: auto;
-      padding: 0;
     }
     .main-content::-webkit-scrollbar { width: 6px; }
-    .main-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+    .main-content::-webkit-scrollbar-thumb { background: #C8B79E; border-radius: 4px; }
 
-    /* Sticky Top Command Bar */
-    .top-command-bar {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-hairline);
-      padding: 16px 32px;
+    /* Digital Header in Charcoal Blue (#293B4A) with White Lettering & Cargo Orange (#EE7E05) Accent */
+    .digital-header {
+      background: var(--charcoal-blue);
+      color: var(--white);
+      border-bottom: 3px solid var(--cargo-orange);
+      padding: 18px 32px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 30;
     }
-
-    .greeting-cluster {
+    .header-left {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
-    .page-title {
-      font-family: 'Lexend', sans-serif;
+    .header-kicker {
+      font-size: 0.7rem;
       font-weight: 700;
-      font-size: 1.35rem;
-      letter-spacing: -0.025em;
-      margin: 0;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .live-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.68rem;
-      font-weight: 600;
-      color: #059669;
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      padding: 3px 10px;
-      border-radius: 999px;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.1em;
+      color: var(--cargo-orange);
     }
-    .live-pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #10b981;
+    .page-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--white);
+      letter-spacing: -0.02em;
     }
     .page-subtitle {
-      color: var(--text-muted);
       font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.75);
       margin: 0;
     }
 
-    /* Command Search & Quick Actions */
+    /* Search & Header Controls */
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
     .compact-search {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-hairline);
-      border-radius: 14px;
-      padding: 5px 6px 5px 14px;
-      min-width: 320px;
+      background: var(--white);
+      border-radius: 8px;
+      padding: 4px 5px 4px 12px;
+      min-width: 290px;
       position: relative;
-      transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+      border: 1px solid transparent;
     }
     .compact-search:focus-within {
-      background: #ffffff;
-      border-color: var(--brand-primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+      border-color: var(--cargo-orange);
+      box-shadow: 0 0 0 3px rgba(238, 126, 5, 0.25);
     }
     .search-input-widget {
       flex: 1;
       border: none;
       background: transparent;
-      font-family: 'Inter', sans-serif;
+      font-family: 'DM Sans', Arial, sans-serif;
       font-size: 0.86rem;
       font-weight: 500;
+      color: var(--charcoal);
       outline: none;
-      color: var(--text-primary);
     }
-    .kbd-shortcut {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: #64748b;
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 2px 6px;
-      pointer-events: none;
+    .search-input-widget::placeholder {
+      color: #8C8275;
     }
     .btn-search-hero {
-      background: var(--text-primary);
-      color: #ffffff;
+      background: var(--cargo-orange);
+      color: var(--charcoal);
       border: none;
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-family: 'Lexend', sans-serif;
-      font-weight: 600;
-      font-size: 0.78rem;
-      cursor: pointer;
-    }
-    .btn-search-hero:hover { background: var(--brand-primary); }
-
-    .btn-quick-book {
-      background: var(--brand-primary);
-      color: #ffffff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 12px;
-      font-family: 'Lexend', sans-serif;
-      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-weight: 700;
       font-size: 0.8rem;
+      cursor: pointer;
+      transition: background-color 140ms ease, transform 140ms var(--ease-out);
+    }
+    .btn-search-hero:hover { background: #FF8C1A; }
+    .btn-search-hero:active { transform: scale(0.97); }
+
+    .btn-new-booking {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.82rem;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+      transition: background-color 140ms ease, border-color 140ms ease, transform 140ms var(--ease-out);
     }
-    .btn-quick-book:hover { background: var(--brand-primary-hover); }
+    .btn-new-booking:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--white);
+    }
+    .btn-new-booking:active { transform: scale(0.97); }
 
-    /* Origin-Aware Notification Bell & Dropdown */
+    /* Notification Bell */
     .notification-wrapper { position: relative; }
     .btn-bell {
-      background: #ffffff;
-      border: 1px solid var(--border-hairline);
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      color: var(--text-secondary);
+      color: var(--white);
       cursor: pointer;
+      transition: background-color 140ms ease, transform 140ms var(--ease-out);
     }
-    .btn-bell:hover { border-color: var(--border-strong); color: var(--text-primary); }
+    .btn-bell:hover { background: rgba(255, 255, 255, 0.18); }
+    .btn-bell:active { transform: scale(0.96); }
     .bell-badge {
       position: absolute;
       top: -5px;
       right: -5px;
-      background: var(--rose-primary);
-      color: #ffffff;
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.65rem;
+      background: var(--cargo-orange);
+      color: var(--charcoal);
+      font-size: 0.68rem;
       font-weight: 700;
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       border-radius: 50%;
-      border: 2px solid #ffffff;
+      border: 2px solid var(--charcoal-blue);
       display: none;
       align-items: center;
       justify-content: center;
@@ -414,18 +359,19 @@
 
     .notif-dropdown {
       position: absolute;
-      top: calc(100% + 10px);
+      top: calc(100% + 8px);
       right: 0;
-      width: 350px;
-      background: #ffffff;
-      border: 1px solid var(--border-hairline);
-      border-radius: 18px;
-      box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.16);
+      width: 330px;
+      background: var(--white);
+      color: var(--charcoal);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      box-shadow: 0 16px 36px rgba(30, 30, 28, 0.16);
       opacity: 0;
       pointer-events: none;
-      transform: scale(0.96) translateY(-6px);
+      transform: scale(0.97) translateY(-4px);
       transform-origin: top right;
-      transition: transform 180ms var(--ease-out), opacity 180ms var(--ease-out);
+      transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
       z-index: 60;
       overflow: hidden;
     }
@@ -435,309 +381,179 @@
       transform: scale(1) translateY(0);
     }
     .notif-header {
-      padding: 14px 18px;
-      border-bottom: 1px solid #f1f5f9;
-      font-family: 'Lexend', sans-serif;
-      font-weight: 600;
-      font-size: 0.85rem;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-line);
+      background: var(--warm-beige-soft);
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--brand-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .notif-list { max-height: 320px; overflow-y: auto; }
+    .notif-list { max-height: 300px; overflow-y: auto; }
     .notif-item {
-      padding: 12px 18px;
-      border-bottom: 1px solid #f8fafc;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--warm-beige-soft);
       display: flex;
       align-items: flex-start;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
-      transition: background-color 140ms ease;
     }
-    .notif-item:hover { background: #f8fafc; }
-    .notif-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: var(--emerald-soft);
-      color: var(--emerald-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .notif-title { font-family: 'Lexend', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--text-primary); display: block; }
-    .notif-desc { font-size: 0.74rem; color: var(--text-muted); }
-    .notif-empty { padding: 32px 16px; text-align: center; color: #94a3b8; font-size: 0.8rem; }
+    .notif-item:hover { background: var(--warm-beige-soft); }
+    .notif-title { font-size: 0.82rem; font-weight: 700; color: var(--charcoal); display: block; }
+    .notif-desc { font-size: 0.75rem; color: var(--text-muted); }
+    .notif-empty { padding: 28px 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
 
-    /* Dashboard Body Container */
-    .dashboard-container {
+    /* Page Body */
+    .workspace-body {
       padding: 24px 32px 40px 32px;
       display: flex;
       flex-direction: column;
       gap: 24px;
+      max-width: 1440px;
+      width: 100%;
     }
 
-    /* Bento 5-Column KPI Grid */
+    /* Editorial Stationery Metric Strip (Inspired by Page 5 of ALF-Brand-Guide.pdf) */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 16px;
+      gap: 14px;
     }
     .stat-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-hairline);
-      border-radius: 18px;
-      padding: 20px;
+      background: var(--white);
+      border: 1px solid var(--border-line);
+      border-bottom: 3px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 16px 18px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 14px;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+      gap: 10px;
       cursor: pointer;
-      transition: transform 180ms var(--ease-out), border-color 180ms ease, box-shadow 180ms var(--ease-out);
+      transition: border-color 140ms ease, transform 140ms var(--ease-out), box-shadow 140ms ease;
     }
-    @media (hover: hover) and (pointer: fine) {
-      .stat-card:hover {
-        transform: translateY(-2px);
-        border-color: #cbd5e1;
-        box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.07);
-      }
+    .stat-card:hover {
+      border-color: var(--brand-purple);
+      border-bottom-color: var(--cargo-orange);
     }
-    .stat-card:active { transform: scale(0.98); }
-    .stat-card-top {
+    .stat-card:active {
+      transform: scale(0.985);
+    }
+    .stat-card.active-filter {
+      border-color: var(--brand-purple);
+      border-bottom: 3px solid var(--cargo-orange);
+      box-shadow: 0 6px 18px rgba(30, 30, 28, 0.06);
+    }
+    .stat-card.alert-state {
+      border-bottom-color: var(--cargo-orange);
+    }
+    .stat-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      color: var(--brand-purple);
     }
-    .stat-title {
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 600;
+    .stat-kicker {
+      font-size: 0.7rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-    .stat-icon-wrapper {
-      width: 38px;
-      height: 38px;
-      border-radius: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-    }
-    .icon-total { background: #eef2ff; color: #4f46e5; }
-    .icon-transit { background: #eff6ff; color: #2563eb; }
-    .icon-delivered { background: #ecfdf5; color: #059669; }
-    .icon-exception { background: #fef2f2; color: #dc2626; }
-    .icon-pending { background: #fffbeb; color: #d97706; }
-
-    .stat-value-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
+      letter-spacing: 0.06em;
+      color: var(--brand-purple);
     }
     .stat-value {
-      font-family: 'Lexend', sans-serif;
-      font-size: 2rem;
+      font-size: 1.9rem;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--charcoal);
       margin: 0;
-      line-height: 1;
-      letter-spacing: -0.03em;
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
-    .stat-meta-pill {
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: var(--bg-subtle);
-      color: var(--text-secondary);
-    }
-    .stat-bar-track {
-      height: 5px;
-      width: 100%;
-      background: #f1f5f9;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .stat-bar-fill {
-      height: 100%;
-      border-radius: 999px;
-      transition: width 500ms var(--ease-out);
-    }
-
-    .stat-card.alert-state {
-      background: linear-gradient(180deg, #ffffff 0%, #fffbeb 100%);
-      border-color: #fde68a;
+    .stat-foot {
+      font-size: 0.74rem;
+      color: var(--text-muted);
     }
     .live-dot {
-      width: 9px;
-      height: 9px;
-      background-color: #ef4444;
+      width: 8px;
+      height: 8px;
+      background-color: var(--cargo-orange);
       border-radius: 50%;
       display: inline-block;
       margin-left: 6px;
     }
 
-    /* Bento Middle Row: Operations Insights & Quick Launchpad */
-    .bento-insights-grid {
-      display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 16px;
-    }
-    .bento-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-hairline);
-      border-radius: 18px;
-      padding: 20px 24px;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
-    }
-    .bento-title {
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.92rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0 0 14px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .corridor-pills {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-      gap: 10px;
-    }
-    .corridor-item {
-      background: var(--bg-canvas);
-      border: 1px solid var(--border-hairline);
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: border-color 150ms ease, background-color 150ms ease;
-    }
-    .corridor-item:hover {
-      background: #ffffff;
-      border-color: var(--brand-primary);
-    }
-    .corridor-name {
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .corridor-count {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--brand-primary);
-      background: var(--brand-soft);
-      padding: 2px 7px;
-      border-radius: 6px;
-    }
-
-    .quick-actions-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .quick-action-tile {
-      background: var(--bg-canvas);
-      border: 1px solid var(--border-hairline);
-      border-radius: 12px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      text-align: left;
-    }
-    .quick-action-tile:hover {
-      background: #ffffff;
-      border-color: var(--brand-primary);
-    }
-    .qa-icon {
-      width: 36px;
-      height: 36px;
+    /* Waybill Register Card (Stationery Sheet Style) */
+    .register-sheet {
+      background: var(--white);
+      border: 1px solid var(--border-line);
+      border-bottom: 4px solid var(--cargo-orange);
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-    .qa-title {
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      display: block;
-    }
-    .qa-sub {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      display: block;
-    }
-
-    /* Shipments Command Table Card */
-    .content-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-hairline);
-      border-radius: 20px;
-      padding: 22px 24px;
-      box-shadow: 0 4px 16px -6px rgba(15, 23, 42, 0.04);
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-    .table-toolbar {
+    .sheet-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-line);
     }
+    .sheet-title-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .sheet-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--brand-purple);
+      margin: 0;
+    }
+
+    /* Clean Segmented Filter Tabs */
     .filter-pills {
       display: inline-flex;
-      background: var(--bg-subtle);
-      padding: 4px;
-      border-radius: 12px;
-      gap: 4px;
+      background: var(--warm-beige);
+      padding: 3px;
+      border-radius: 8px;
+      gap: 2px;
+      border: 1px solid var(--border-line);
     }
     .filter-pill-btn {
       border: none;
       background: transparent;
-      font-family: 'Lexend', sans-serif;
-      font-size: 0.76rem;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 0.78rem;
       font-weight: 600;
-      color: var(--text-muted);
-      padding: 7px 14px;
-      border-radius: 9px;
+      color: var(--charcoal);
+      padding: 6px 13px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 150ms ease, color 150ms ease;
+      transition: background-color 140ms ease, color 140ms ease;
     }
     .filter-pill-btn.active {
-      background: #ffffff;
-      color: var(--brand-primary);
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+      background: var(--brand-purple);
+      color: var(--white);
     }
 
     .table-inline-filter {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: var(--bg-canvas);
-      border: 1px solid var(--border-hairline);
-      border-radius: 11px;
+      background: var(--warm-beige-soft);
+      border: 1px solid var(--border-line);
+      border-radius: 8px;
       padding: 6px 12px;
       min-width: 240px;
     }
@@ -745,90 +561,85 @@
       border: none;
       background: transparent;
       outline: none;
-      font-size: 0.8rem;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 0.82rem;
       width: 100%;
-      color: var(--text-primary);
+      color: var(--charcoal);
     }
 
     .table-container {
       overflow-x: auto;
-      border-radius: 14px;
-      border: 1px solid var(--border-hairline);
     }
     .minimal-table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
+      border-collapse: collapse;
       text-align: left;
     }
     .minimal-table th {
-      font-family: 'Lexend', sans-serif;
-      padding: 13px 18px;
+      padding: 11px 14px;
       font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--text-muted);
+      font-weight: 700;
+      color: var(--brand-purple);
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      background: #f8fafc;
-      border-bottom: 1px solid var(--border-hairline);
+      border-bottom: 1px solid var(--border-strong);
+      background: var(--warm-beige-soft);
     }
     .minimal-table td {
-      padding: 14px 18px;
-      border-bottom: 1px solid #f1f5f9;
-      font-size: 0.86rem;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border-line);
+      font-size: 0.88rem;
+      color: var(--charcoal);
       vertical-align: middle;
-      transition: background-color 120ms ease;
     }
     .minimal-table tbody tr {
       cursor: pointer;
+      transition: background-color 120ms ease;
     }
     .minimal-table tbody tr:hover td {
-      background-color: #f8fafc;
+      background-color: var(--warm-beige-soft);
     }
-    .minimal-table tbody tr:last-child td { border-bottom: none; }
+    .minimal-table tbody tr:last-child td {
+      border-bottom: none;
+    }
 
-    .awb-mono-chip {
-      font-family: 'JetBrains Mono', monospace;
+    .awb-code {
+      font-family: 'IBM Plex Mono', monospace;
       font-weight: 600;
-      font-size: 0.84rem;
-      color: var(--brand-primary);
-      background: var(--brand-soft);
-      padding: 4px 10px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      font-size: 0.86rem;
+      color: var(--charcoal);
+      background: var(--warm-beige);
+      border: 1px solid var(--border-strong);
+      padding: 3px 9px;
+      border-radius: 5px;
+      display: inline-block;
     }
     .status-badge {
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid;
-      font-family: 'Lexend', sans-serif;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      display: inline-block;
+      letter-spacing: 0.01em;
     }
 
     .error-alert {
       position: absolute;
-      top: calc(100% + 8px);
+      top: calc(100% + 6px);
       right: 0;
       width: 100%;
-      background: var(--rose-soft);
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: 500;
+      background: var(--deep-plum);
+      border: 1px solid var(--cargo-orange);
+      color: var(--warm-beige);
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
       display: none;
       z-index: 50;
-      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.12);
     }
 
-    /* Modals (Natural Scale >= 0.96 + Ease-Out) */
+    /* Modals */
     .delivery-popup-overlay,
     .tracking-overlay {
       position: fixed;
@@ -836,15 +647,15 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(6px);
+      background: rgba(30, 30, 28, 0.55);
+      backdrop-filter: blur(4px);
       z-index: 2000;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 200ms var(--ease-out);
+      transition: opacity 180ms var(--ease-out);
     }
     .delivery-popup-overlay.active,
     .tracking-overlay.active {
@@ -852,165 +663,143 @@
       pointer-events: all;
     }
     .delivery-popup-card {
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 36px;
-      max-width: 420px;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
       width: 92%;
-      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 20px 40px rgba(30, 30, 28, 0.22);
       text-align: center;
-      transform: scale(0.96) translateY(8px);
-      transition: transform 220ms var(--ease-out);
-      border: 1px solid var(--border-hairline);
+      transform: scale(0.96);
+      transition: transform 180ms var(--ease-out);
+      border: 1px solid var(--border-line);
+      border-bottom: 4px solid var(--cargo-orange);
     }
-    .delivery-popup-overlay.active .delivery-popup-card {
-      transform: scale(1) translateY(0);
-    }
-    .dp-icon-wrapper {
-      width: 72px;
-      height: 72px;
-      background: var(--emerald-soft);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 18px auto;
-      font-size: 2.2rem;
-      color: var(--emerald-primary);
-      border: 5px solid #d1fae5;
-    }
-    .dp-title { font-family: 'Lexend', sans-serif; font-size: 1.35rem; font-weight: 700; margin: 0 0 6px 0; }
-    .dp-desc { color: var(--text-muted); font-size: 0.88rem; margin: 0 0 20px 0; }
+    .delivery-popup-overlay.active .delivery-popup-card { transform: scale(1); }
+    .dp-title { font-size: 1.25rem; font-weight: 700; color: var(--brand-purple); margin: 12px 0 6px 0; }
+    .dp-desc { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 18px 0; }
     .dp-details-box {
-      background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 24px;
+      background: var(--warm-beige-soft);
+      border: 1px solid var(--border-line);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-    .dp-row { display: flex; justify-content: space-between; align-items: center; }
-    .dp-label { font-family: 'Lexend', sans-serif; font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
-    .dp-value { font-family: 'Lexend', sans-serif; font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
-    .dp-actions { display: flex; flex-direction: column; gap: 10px; }
-    .btn-dp-primary {
-      background: #10b981;
-      color: #ffffff;
-      border: none;
-      padding: 13px;
-      border-radius: 12px;
-      font-family: 'Lexend', sans-serif;
-      font-weight: 600;
-      font-size: 0.92rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       gap: 8px;
     }
-    .btn-dp-secondary {
-      background: #f1f5f9;
-      color: #475569;
-      border: 1px solid #e2e8f0;
+    .dp-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem; }
+    .dp-label { color: var(--brand-purple); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+    .dp-value { font-weight: 700; color: var(--charcoal); }
+    .dp-actions { display: flex; flex-direction: column; gap: 8px; }
+    .btn-dp-primary {
+      background: var(--cargo-orange);
+      color: var(--charcoal);
+      border: none;
       padding: 12px;
-      border-radius: 12px;
-      font-family: 'Lexend', sans-serif;
-      font-weight: 600;
+      border-radius: 8px;
+      font-weight: 700;
       font-size: 0.88rem;
       cursor: pointer;
     }
+    .btn-dp-secondary {
+      background: var(--warm-beige);
+      color: var(--charcoal);
+      border: 1px solid var(--border-strong);
+      padding: 11px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
 
-    /* Tracking Modal */
+    /* Tracking Modal: Charcoal Blue Header per Brand Guide Page 1 */
     .tracking-modal {
-      background: #f8fafc;
-      border-radius: 24px;
-      max-width: 900px;
+      background: var(--warm-beige);
+      border-radius: 12px;
+      max-width: 880px;
       width: 95%;
-      height: 86vh;
-      max-height: 86vh;
+      height: 85vh;
+      max-height: 85vh;
       overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
-      transform: scale(0.96) translateY(8px);
-      transition: transform 220ms var(--ease-out);
+      box-shadow: 0 24px 48px rgba(30, 30, 28, 0.28);
+      transform: scale(0.96);
+      transition: transform 180ms var(--ease-out);
       display: flex;
       flex-direction: column;
-      border: 1px solid #ffffff;
+      border: 1px solid var(--border-strong);
     }
-    .tracking-overlay.active .tracking-modal { transform: scale(1) translateY(0); }
+    .tracking-overlay.active .tracking-modal { transform: scale(1); }
     .tracking-header {
-      background: #ffffff;
-      padding: 20px 28px;
-      border-bottom: 1px solid var(--border-hairline);
+      background: var(--charcoal-blue);
+      color: var(--white);
+      padding: 18px 26px;
+      border-bottom: 4px solid var(--cargo-orange);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .awb-header-group { display: flex; align-items: center; gap: 14px; }
-    .awb-number { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
-    .awb-status-badge { padding: 5px 12px; border-radius: 999px; font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-hairline); background: #f8fafc; }
-    .btn-close-modal { background: #f1f5f9; border: none; width: 34px; height: 34px; border-radius: 10px; font-size: 1.2rem; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .tracking-body { padding: 24px 28px; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-    .stepper-container { background: #ffffff; border-radius: 16px; padding: 22px 20px 18px 20px; border: 1px solid var(--border-hairline); margin-bottom: 20px; flex-shrink: 0; }
+    .awb-number { font-family: 'IBM Plex Mono', monospace; font-size: 1.3rem; font-weight: 600; color: var(--white); margin: 0; }
+    .awb-status-badge { padding: 4px 11px; border-radius: 5px; font-weight: 700; font-size: 0.76rem; background: var(--cargo-orange); color: var(--charcoal); }
+    .btn-close-modal { background: rgba(255, 255, 255, 0.14); border: none; width: 32px; height: 32px; border-radius: 6px; color: var(--white); cursor: pointer; font-size: 1rem; }
+    .tracking-body { padding: 22px 26px; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    .stepper-container { background: var(--white); border-radius: 10px; padding: 20px; border: 1px solid var(--border-line); margin-bottom: 18px; flex-shrink: 0; }
     .stepper { display: flex; justify-content: space-between; position: relative; padding: 0 10px; }
-    .stepper-track { position: absolute; top: 7px; left: 75px; right: 75px; height: 3px; background: #e2e8f0; z-index: 1; border-radius: 2px; }
-    .stepper-progress { height: 100%; width: 0%; background: var(--brand-primary); transition: width 600ms var(--ease-out); border-radius: 2px; }
-    .step { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 130px; text-align: center; }
-    .step-dot { width: 16px; height: 16px; border-radius: 50%; background: #ffffff; border: 3px solid #cbd5e1; transition: transform 250ms var(--ease-out), border-color 250ms ease, background-color 250ms ease; box-shadow: 0 0 0 4px #ffffff; }
-    .step-label { font-family: 'Lexend', sans-serif; color: #94a3b8; line-height: 1.3; }
-    .stepper-loc-city { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
-    .stepper-loc-country { display: block; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; opacity: 0.75; }
-    .stepper-transit { display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-    .stepper.state-booked .step:nth-child(2) .step-dot { border-color: var(--brand-primary); background: var(--brand-primary); }
-    .stepper.state-transit .stepper-progress { background: var(--brand-primary); }
-    .stepper.state-transit .step:nth-child(2) .step-dot, .stepper.state-transit .step:nth-child(3) .step-dot { border-color: var(--brand-primary); background: var(--brand-primary); }
-    .stepper.state-delivered .stepper-progress { background: #10b981; }
-    .stepper.state-delivered .step .step-dot { border-color: #10b981; background: #10b981; }
-    .stepper.state-exception .stepper-progress { background: #ef4444; }
-    .stepper.state-exception .step .step-dot { border-color: #ef4444; background: #ef4444; }
+    .stepper-track { position: absolute; top: 7px; left: 75px; right: 75px; height: 3px; background: var(--warm-beige); z-index: 1; }
+    .stepper-progress { height: 100%; width: 0%; background: var(--cargo-orange); transition: width 500ms var(--ease-out); }
+    .step { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 130px; text-align: center; }
+    .step-dot { width: 15px; height: 15px; border-radius: 50%; background: var(--white); border: 3px solid var(--border-strong); box-shadow: 0 0 0 4px var(--white); }
+    .stepper-loc-city { display: block; font-size: 0.78rem; font-weight: 700; color: var(--charcoal); text-transform: uppercase; }
+    .stepper-loc-country { display: block; font-size: 0.65rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; }
+    .stepper-transit { display: inline-block; font-size: 0.74rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; }
+    .stepper.state-booked .step:nth-child(2) .step-dot { border-color: var(--brand-purple); background: var(--brand-purple); }
+    .stepper.state-transit .stepper-progress { background: var(--cargo-orange); }
+    .stepper.state-transit .step:nth-child(2) .step-dot, .stepper.state-transit .step:nth-child(3) .step-dot { border-color: var(--cargo-orange); background: var(--cargo-orange); }
+    .stepper.state-delivered .stepper-progress { background: var(--brand-purple); }
+    .stepper.state-delivered .step .step-dot { border-color: var(--brand-purple); background: var(--brand-purple); }
+    .stepper.state-exception .stepper-progress { background: var(--deep-plum); }
+    .stepper.state-exception .step .step-dot { border-color: var(--deep-plum); background: var(--deep-plum); }
 
-    .details-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; flex: 1; overflow: hidden; min-height: 0; }
-    .left-info-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 6px; }
+    .details-grid { display: grid; grid-template-columns: 290px 1fr; gap: 18px; flex: 1; overflow: hidden; min-height: 0; }
+    .left-info-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; }
     .right-log-panel { display: flex; flex-direction: column; overflow: hidden; }
-    .section-heading { font-family: 'Lexend', sans-serif; font-size: 0.76rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-    .info-group-card { background: #ffffff; border: 1px solid var(--border-hairline); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-    .info-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed #f1f5f9; padding-bottom: 6px; }
+    .section-heading { font-size: 0.72rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px 0; }
+    .info-group-card { background: var(--white); border: 1px solid var(--border-line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; }
+    .info-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--warm-beige); padding-bottom: 5px; }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-row-label { font-family: 'Lexend', sans-serif; font-size: 0.72rem; color: #64748b; font-weight: 500; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-    .info-row-value { font-weight: 600; color: var(--text-primary); font-size: 0.82rem; text-align: right; max-width: 60%; }
-    .route-display { display: flex; align-items: center; justify-content: center; gap: 16px; }
-    .route-point { display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .route-city { font-family: 'Lexend', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; }
-    .route-country { font-family: 'Lexend', sans-serif; font-size: 0.65rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
-    .carrier-card { background: #ffffff; border: 1px solid var(--border-hairline); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; }
-    .carrier-icon { background: #eef2ff; color: var(--brand-primary); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-    .carrier-title { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.85rem; display: block; }
-    .carrier-docket { font-size: 0.78rem; color: #64748b; font-family: 'JetBrains Mono', monospace; }
-    .timeline-wrapper { flex: 1; overflow-y: auto; padding-right: 10px; }
-    .timeline-row { display: grid; grid-template-columns: 80px 26px 1fr; }
-    .time-col { text-align: right; padding-right: 10px; padding-top: 12px; }
-    .tl-date { display: block; font-family: 'Lexend', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
-    .tl-time { display: block; font-size: 0.7rem; color: #64748b; }
+    .info-row-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .info-row-value { font-weight: 700; color: var(--charcoal); font-size: 0.82rem; text-align: right; max-width: 62%; }
+    .route-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .route-point { display: flex; flex-direction: column; }
+    .route-city { font-size: 0.84rem; font-weight: 700; color: var(--charcoal); text-transform: uppercase; }
+    .route-country { font-size: 0.65rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; }
+    .carrier-card { background: var(--charcoal-blue); color: var(--white); border-radius: 8px; padding: 12px 14px; border-left: 4px solid var(--cargo-orange); }
+    .carrier-title { font-weight: 700; font-size: 0.84rem; color: var(--white); display: block; }
+    .carrier-docket { font-size: 0.76rem; color: var(--warm-beige); font-family: 'IBM Plex Mono', monospace; }
+    .timeline-wrapper { flex: 1; overflow-y: auto; padding-right: 8px; }
+    .timeline-row { display: grid; grid-template-columns: 76px 24px 1fr; }
+    .time-col { text-align: right; padding-right: 8px; padding-top: 10px; }
+    .tl-date { display: block; font-size: 0.72rem; font-weight: 700; color: var(--charcoal); text-transform: uppercase; }
+    .tl-time { display: block; font-size: 0.68rem; color: var(--text-muted); }
     .node-col { position: relative; display: flex; justify-content: center; }
-    .node-line { position: absolute; top: 28px; bottom: -12px; width: 1px; background: #cbd5e1; }
+    .node-line { position: absolute; top: 24px; bottom: -10px; width: 1.5px; background: var(--border-strong); }
     .timeline-row:last-child .node-line { display: none; }
-    .node-dot { width: 10px; height: 10px; border-radius: 50%; background: #ffffff; border: 2px solid #94a3b8; position: relative; z-index: 2; margin-top: 15px; }
-    .timeline-row.newest .node-dot { background: var(--brand-primary); border-color: var(--brand-primary); width: 12px; height: 12px; margin-top: 14px; }
-    .content-col { padding-left: 10px; padding-bottom: 18px; }
-    .tl-card { background: #ffffff; border: 1px solid var(--border-hairline); border-radius: 12px; padding: 14px 16px; }
-    .timeline-row.newest .tl-card { border-color: var(--brand-primary); background: #eef2ff; }
-    .tl-status { font-family: 'Lexend', sans-serif; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; display: block; }
-    .tl-meta { font-size: 0.8rem; color: #64748b; display: flex; flex-direction: column; gap: 4px; }
+    .node-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--white); border: 2px solid var(--brand-purple); position: relative; z-index: 2; margin-top: 13px; }
+    .timeline-row.newest .node-dot { background: var(--cargo-orange); border-color: var(--cargo-orange); width: 11px; height: 11px; margin-top: 12px; }
+    .content-col { padding-left: 8px; padding-bottom: 14px; }
+    .tl-card { background: var(--white); border: 1px solid var(--border-line); border-radius: 8px; padding: 12px 14px; }
+    .timeline-row.newest .tl-card { border-color: var(--brand-purple); border-left: 3px solid var(--cargo-orange); }
+    .tl-status { font-weight: 700; font-size: 0.85rem; color: var(--brand-purple); margin-bottom: 3px; display: block; }
+    .tl-meta { font-size: 0.78rem; color: var(--charcoal); display: flex; flex-direction: column; gap: 3px; }
 
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .bento-insights-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 900px) {
       .sidebar { display: none !important; }
-      .top-command-bar { padding: 14px 16px; }
-      .dashboard-container { padding: 16px 16px 90px 16px; }
+      .digital-header { padding: 14px 16px; }
+      .workspace-body { padding: 16px 16px 88px 16px; }
       .details-grid { grid-template-columns: 1fr; overflow-y: auto; }
     }
   </style>
@@ -1020,16 +809,19 @@
   <!-- Delivery Alert Modal -->
   <div class="delivery-popup-overlay" id="deliveryAlertOverlay">
     <div class="delivery-popup-card">
-      <div class="dp-icon-wrapper"><i class="bi bi-check-circle-fill"></i></div>
-      <h3 class="dp-title">Package Delivered!</h3>
-      <p class="dp-desc">A shipment from your branch has reached its destination.</p>
+      <svg class="alf-icon" style="width: 42px; height: 42px; color: var(--brand-purple); margin: 0 auto;" viewBox="0 0 24 24">
+        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+        <path class="accent-stroke" d="m9 12 2 2 4-4"/>
+      </svg>
+      <h3 class="dp-title">Shipment Delivered</h3>
+      <p class="dp-desc">This waybill has been marked delivered at destination.</p>
       <div class="dp-details-box">
-        <div class="dp-row"><span class="dp-label">Tracking ID</span><span class="dp-value" id="alertAwb">---</span></div>
+        <div class="dp-row"><span class="dp-label">Waybill</span><span class="dp-value" id="alertAwb">---</span></div>
         <div class="dp-row"><span class="dp-label">Destination</span><span class="dp-value" id="alertDest">---</span></div>
       </div>
       <div class="dp-actions">
-        <button class="btn-dp-primary btn-press" onclick="notifyPartyAction()">Notify Shipper <i class="bi bi-whatsapp"></i></button>
-        <button class="btn-dp-secondary btn-press" onclick="markDeliveryRead()">Mark as Read</button>
+        <button class="btn-dp-primary" onclick="notifyPartyAction()">Send WhatsApp Confirmation</button>
+        <button class="btn-dp-secondary" onclick="markDeliveryRead()">Dismiss Notice</button>
       </div>
     </div>
   </div>
@@ -1039,10 +831,10 @@
     <div class="tracking-modal">
       <div class="tracking-header">
         <div class="awb-header-group">
-          <h2 class="awb-number" id="lblAwb"><i class="bi bi-box-seam" style="color: var(--text-muted);"></i> ---</h2>
-          <div class="awb-status-badge" id="lblStatusBadge">Pending</div>
+          <h2 class="awb-number" id="lblAwb">---</h2>
+          <div class="awb-status-badge" id="lblStatusBadge">In-Transit</div>
         </div>
-        <button class="btn-close-modal btn-press" onclick="closeTrackingModal()" title="Close"><i class="bi bi-x"></i></button>
+        <button class="btn-close-modal" onclick="closeTrackingModal()" title="Close">&times;</button>
       </div>
       <div class="tracking-body">
         <div class="stepper-container">
@@ -1055,36 +847,33 @@
         </div>
         <div class="details-grid">
           <div class="left-info-panel">
-            <h4 class="section-heading">Shipment Info</h4>
+            <h4 class="section-heading">Waybill Summary</h4>
             <div class="info-group-card">
               <div id="lblRoute">
                 <div class="route-display">
                   <div class="route-point"><span class="route-city">---</span></div>
-                  <div class="route-divider"><i class="bi bi-arrow-right"></i></div>
-                  <div class="route-point"><span class="route-city">---</span></div>
+                  <span style="color: var(--cargo-orange); font-weight: 700;">&rarr;</span>
+                  <div class="route-point" style="text-align: right;"><span class="route-city">---</span></div>
                 </div>
               </div>
             </div>
             <div class="info-group-card">
-              <div class="info-row"><span class="info-row-label"><i class="bi bi-calendar-event"></i> Date</span><span class="info-row-value" id="lblDate">---</span></div>
-              <div class="info-row"><span class="info-row-label"><i class="bi bi-person-up"></i> Shipper</span><span class="info-row-value" id="lblShipper">---</span></div>
-              <div class="info-row"><span class="info-row-label"><i class="bi bi-person-down"></i> Consignee</span><span class="info-row-value" id="lblConsignee">---</span></div>
+              <div class="info-row"><span class="info-row-label">Booked Date</span><span class="info-row-value" id="lblDate">---</span></div>
+              <div class="info-row"><span class="info-row-label">Shipper</span><span class="info-row-value" id="lblShipper">---</span></div>
+              <div class="info-row"><span class="info-row-label">Consignee</span><span class="info-row-value" id="lblConsignee">---</span></div>
             </div>
             <div class="info-group-card">
-              <div class="info-row"><span class="info-row-label"><i class="bi bi-box"></i> Weight</span><span class="info-row-value" id="lblWeightOnly">--- KG</span></div>
-              <div class="info-row"><span class="info-row-label"><i class="bi bi-boxes"></i> Pieces</span><span class="info-row-value" id="lblPcsOnly">--- PCS</span></div>
-              <div class="info-row"><span class="info-row-label"><i class="bi bi-tag"></i> Type</span><span class="info-row-value" id="lblType">---</span></div>
+              <div class="info-row"><span class="info-row-label">Weight</span><span class="info-row-value" id="lblWeightOnly">--- KG</span></div>
+              <div class="info-row"><span class="info-row-label">Pieces</span><span class="info-row-value" id="lblPcsOnly">--- PCS</span></div>
+              <div class="info-row"><span class="info-row-label">Service Type</span><span class="info-row-value" id="lblType">---</span></div>
             </div>
             <div class="carrier-card">
-              <div class="carrier-icon"><i class="bi bi-airplane-engines"></i></div>
-              <div class="carrier-text">
-                <span class="carrier-title" id="lbl3rdPartyName">Not Assigned</span>
-                <span class="carrier-docket" id="lbl3rdPartyDocket">Internal Route</span>
-              </div>
+              <span class="carrier-title" id="lbl3rdPartyName">Internal Network</span>
+              <span class="carrier-docket" id="lbl3rdPartyDocket">Direct Linehaul</span>
             </div>
           </div>
           <div class="right-log-panel">
-            <h4 class="section-heading">Activity Log</h4>
+            <h4 class="section-heading">Scan History</h4>
             <div class="timeline-wrapper"><div id="timelineContainer"></div></div>
           </div>
         </div>
@@ -1096,20 +885,70 @@
   <div class="app-layout">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="sidebar-brand">
-          <div class="brand-logo-box"><i class="bi bi-box-seam-fill"></i></div>
-          <span class="brand-text">Al-Farha Cargo</span>
-        </div>
+        <svg class="brand-lockup-svg" viewBox="0 0 340 108" width="180" height="56" xmlns="http://www.w3.org/2000/svg" aria-label="Al-Farha Cargo">
+          <text x="235" y="25" text-anchor="end" fill="#1E1E1C" font-family="Tahoma, Arial, sans-serif" font-weight="700" font-size="19" direction="rtl">الفرحة للنقل و الشحن</text>
+          <text x="14" y="64" fill="#1E1E1C" font-family="Arial, sans-serif" font-weight="700" font-size="42" letter-spacing="-1">Al-Farha</text>
+          <text x="188" y="64" fill="#EE7E05" font-family="Arial, sans-serif" font-weight="700" font-size="42" letter-spacing="-1">Cargo</text>
+          <rect x="14" y="74" width="222" height="22" rx="5" fill="#713280"/>
+          <text x="125" y="89" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-style="italic" font-size="13.5">Courier &amp; Parcel Service</text>
+          <path d="M 248 22 A 44 42 0 1 1 266 96 A 38 36 0 1 0 248 22 Z" fill="#EE7E05"/>
+        </svg>
       </div>
 
-      <div class="sidebar-section-label">Operations</div>
+      <div class="sidebar-kicker">Workspace</div>
       <nav class="nav-menu">
-        <div class="nav-item active" onclick="returnToDashboard()" title="Dashboard"><i class="bi bi-grid-1x2-fill"></i> <span class="nav-text">Command Center</span></div>
-        <div class="nav-item" onclick="loadBookingForm()" title="New Booking"><i class="bi bi-plus-square-fill"></i> <span class="nav-text">Create Shipment</span></div>
-        <div class="nav-item" onclick="loadTransfers()" title="Inventory"><i class="bi bi-arrow-left-right"></i> <span class="nav-text">Hub Inventory</span></div>
-        <div class="nav-item" onclick="loadStatusUpdate()" title="Update Status"><i class="bi bi-upc-scan"></i> <span class="nav-text">Scan &amp; Update</span></div>
-        <div class="nav-item" id="nav-consol" onclick="loadConsolidation()" title="Consolidations"><i class="bi bi-layers-fill"></i> <span class="nav-text">Consolidations</span></div>
-        <div class="nav-item d-none" id="nav-admin" onclick="loadAdminPanel()" title="Master Control"><i class="bi bi-shield-lock-fill"></i> <span class="nav-text">Master Control</span></div>
+        <div class="nav-item active" onclick="returnToDashboard()" title="Dashboard">
+          <svg class="alf-icon" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="9" rx="1.5"/>
+            <rect class="accent-stroke" x="14" y="3" width="7" height="5" rx="1.5"/>
+            <rect x="14" y="12" width="7" height="9" rx="1.5"/>
+            <rect x="3" y="16" width="7" height="5" rx="1.5"/>
+          </svg>
+          <span class="nav-text">Dashboard</span>
+        </div>
+
+        <div class="nav-item" onclick="loadBookingForm()" title="New Booking">
+          <svg class="alf-icon" viewBox="0 0 24 24">
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+            <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+            <path class="accent-stroke" d="M16 5.5 7.5 10.5"/>
+          </svg>
+          <span class="nav-text">New Booking</span>
+        </div>
+
+        <div class="nav-item" onclick="loadTransfers()" title="Branch Inventory">
+          <svg class="alf-icon" viewBox="0 0 24 24">
+            <path d="M17 3l4 4-4 4"/><path d="M3 7h18"/>
+            <path class="accent-stroke" d="M7 21l-4-4 4-4"/><path class="accent-stroke" d="M21 17H3"/>
+          </svg>
+          <span class="nav-text">Inventory &amp; Transfers</span>
+        </div>
+
+        <div class="nav-item" onclick="loadStatusUpdate()" title="Update Status">
+          <svg class="alf-icon" viewBox="0 0 24 24">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+            <line class="accent-stroke" x1="7" y1="12" x2="17" y2="12"/>
+          </svg>
+          <span class="nav-text">Scan &amp; Update</span>
+        </div>
+
+        <div class="nav-item" id="nav-consol" onclick="loadConsolidation()" title="Consolidations">
+          <svg class="alf-icon" viewBox="0 0 24 24">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline class="accent-stroke" points="2 12 12 17 22 12"/>
+            <polyline points="2 17 12 22 22 17"/>
+          </svg>
+          <span class="nav-text">Consolidations</span>
+        </div>
+
+        <div class="nav-item d-none" id="nav-admin" onclick="loadAdminPanel()" title="Master Control">
+          <svg class="alf-icon" viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <circle class="accent-stroke" cx="12" cy="11" r="2.5"/>
+          </svg>
+          <span class="nav-text">Master Control</span>
+        </div>
       </nav>
 
       <div class="sidebar-footer">
@@ -1117,183 +956,148 @@
           <span class="user-name" id="navName">Loading...</span>
           <span class="user-branch" id="navBranch">Branch</span>
         </div>
-        <button class="btn-logout" onclick="logoutSystem()" title="Sign Out"><i class="bi bi-box-arrow-right"></i></button>
+        <button class="btn-logout" onclick="logoutSystem()" title="Sign Out">
+          <svg class="alf-icon" style="width: 17px; height: 17px;" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline class="accent-stroke" points="16 17 21 12 16 7"/>
+            <line class="accent-stroke" x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
       </div>
     </aside>
 
     <main class="main-content" id="mainContent">
-      <!-- Sticky Top Command Header -->
-      <header class="top-command-bar">
-        <div class="greeting-cluster">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <h1 class="page-title" id="welcomeMsg">Command Center</h1>
-            <span class="live-pill"><span class="live-pill-dot"></span> Live Cloud</span>
-          </div>
-          <p class="page-subtitle" id="quoteMsg">Enterprise logistics overview &amp; real-time shipment telemetry</p>
+      <!-- Digital Header in Charcoal Blue (#293B4A) per Brand Guide Page 1 -->
+      <header class="digital-header">
+        <div class="header-left">
+          <span class="header-kicker">Al-Farha Cargo Operations</span>
+          <h1 class="page-title" id="welcomeMsg">Branch Overview</h1>
+          <p class="page-subtitle" id="quoteMsg">Courier &amp; Parcel Service</p>
         </div>
 
         <div class="top-actions">
           <div class="compact-search">
-            <i class="bi bi-search" style="color: #64748b;"></i>
-            <input type="text" id="searchInput" class="search-input-widget" placeholder="Track AWB or Carrier Docket..." onkeypress="if(event.key === 'Enter') executeSearch()">
-            <span class="kbd-shortcut">/</span>
-            <button class="btn-search-hero btn-press" id="searchBtn" onclick="executeSearch()">Track</button>
+            <svg class="alf-icon" style="width: 16px; height: 16px; color: var(--brand-purple);" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7"/><line class="accent-stroke" x1="20" y1="20" x2="16.2" y2="16.2"/>
+            </svg>
+            <input type="text" id="searchInput" class="search-input-widget" placeholder="Track AWB or Docket No..." onkeypress="if(event.key === 'Enter') executeSearch()">
+            <button class="btn-search-hero" id="searchBtn" onclick="executeSearch()">Track</button>
             <div id="searchAlert" class="error-alert"></div>
           </div>
 
-          <button class="btn-quick-book btn-press" onclick="loadBookingForm()">
-            <i class="bi bi-plus-lg"></i> <span>New Shipment</span>
+          <button class="btn-new-booking" onclick="loadBookingForm()">
+            <svg class="alf-icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+              <line class="accent-stroke" x1="12" y1="5" x2="12" y2="19"/><line class="accent-stroke" x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>New Booking</span>
           </button>
 
           <div class="notification-wrapper" id="notifWrapper">
-            <button class="btn-bell btn-press" id="bellBtn" onclick="toggleNotifications(event)" title="Unread Deliveries">
-              <i class="bi bi-bell-fill"></i>
+            <button class="btn-bell" id="bellBtn" onclick="toggleNotifications(event)" title="Delivery Notices">
+              <svg class="alf-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path class="accent-stroke" d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
               <span class="bell-badge" id="bellBadge">0</span>
             </button>
             <div class="notif-dropdown" id="notifDropdown">
               <div class="notif-header">
-                <span>Delivery Alerts</span>
-                <span class="status-badge" style="font-size:0.68rem; color:#059669; background:#ecfdf5; border-color:#a7f3d0;" id="notifCountLabel">0 New</span>
+                <span>Delivered Notices</span>
+                <span id="notifCountLabel" style="font-size: 0.72rem; color: var(--charcoal);">0 New</span>
               </div>
               <div class="notif-list" id="notifList">
-                <div class="notif-empty">No unread deliveries</div>
+                <div class="notif-empty">No unread delivery notices</div>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div class="dashboard-container">
-        <!-- 5-Card Bento KPI Strip -->
+      <div class="workspace-body">
+        <!-- 5 Stationery Summary Cards (Click any card to filter the register below) -->
         <div class="stats-grid">
-          <div class="stat-card" onclick="filterTableByCategory('ALL')">
-            <div class="stat-card-top">
-              <span class="stat-title">Total Shipments</span>
-              <div class="stat-icon-wrapper icon-total"><i class="bi bi-box-seam-fill"></i></div>
+          <div class="stat-card" id="cardFilter-ALL" onclick="filterTableByCategory('ALL')">
+            <div class="stat-top">
+              <span class="stat-kicker">01 / Total Booked</span>
+              <svg class="alf-icon" viewBox="0 0 24 24">
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                <polyline class="accent-stroke" points="3.3 7 12 12 20.7 7"/>
+              </svg>
             </div>
-            <div class="stat-value-row">
-              <h2 class="stat-value" id="statTotal"><span class="spinner-border spinner-border-sm"></span></h2>
-              <span class="stat-meta-pill" id="statTotalMeta">100%</span>
-            </div>
-            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 100%; background: #4f46e5;"></div></div>
+            <h2 class="stat-value" id="statTotal">-</h2>
+            <span class="stat-foot">All recorded waybills</span>
           </div>
 
-          <div class="stat-card" onclick="filterTableByCategory('TRANSIT')">
-            <div class="stat-card-top">
-              <span class="stat-title">In-Transit</span>
-              <div class="stat-icon-wrapper icon-transit"><i class="bi bi-airplane-engines-fill"></i></div>
+          <div class="stat-card active-filter" id="cardFilter-TRANSIT" onclick="filterTableByCategory('TRANSIT')">
+            <div class="stat-top">
+              <span class="stat-kicker">02 / In-Transit</span>
+              <svg class="alf-icon" viewBox="0 0 24 24">
+                <rect x="1" y="4" width="14" height="12" rx="1.5"/>
+                <polygon class="accent-stroke" points="15 8 19 8 22 11 22 16 15 16 15 8"/>
+                <circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="18.5" r="2"/>
+              </svg>
             </div>
-            <div class="stat-value-row">
-              <h2 class="stat-value" id="statTransit"><span class="spinner-border spinner-border-sm"></span></h2>
-              <span class="stat-meta-pill" style="color: #2563eb; background: #eff6ff;" id="statTransitPct">Active</span>
-            </div>
-            <div class="stat-bar-track"><div class="stat-bar-fill" id="barTransit" style="width: 45%; background: #3b82f6;"></div></div>
+            <h2 class="stat-value" id="statTransit">-</h2>
+            <span class="stat-foot">Active on linehaul &amp; hubs</span>
           </div>
 
-          <div class="stat-card" onclick="filterTableByCategory('DELIVERED')">
-            <div class="stat-card-top">
-              <span class="stat-title">Delivered</span>
-              <div class="stat-icon-wrapper icon-delivered"><i class="bi bi-check-circle-fill"></i></div>
+          <div class="stat-card" id="cardFilter-DELIVERED" onclick="filterTableByCategory('DELIVERED')">
+            <div class="stat-top">
+              <span class="stat-kicker">03 / Delivered</span>
+              <svg class="alf-icon" viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline class="accent-stroke" points="22 4 12 14.01 9 11.01"/>
+              </svg>
             </div>
-            <div class="stat-value-row">
-              <h2 class="stat-value" id="statDelivered"><span class="spinner-border spinner-border-sm"></span></h2>
-              <span class="stat-meta-pill" style="color: #059669; background: #ecfdf5;" id="statDeliveredPct">Done</span>
-            </div>
-            <div class="stat-bar-track"><div class="stat-bar-fill" id="barDelivered" style="width: 70%; background: #10b981;"></div></div>
+            <h2 class="stat-value" id="statDelivered">-</h2>
+            <span class="stat-foot">Completed consignments</span>
           </div>
 
-          <div class="stat-card" onclick="filterTableByCategory('EXCEPTION')">
-            <div class="stat-card-top">
-              <span class="stat-title">Exceptions</span>
-              <div class="stat-icon-wrapper icon-exception"><i class="bi bi-exclamation-octagon-fill"></i></div>
+          <div class="stat-card" id="cardFilter-EXCEPTION" onclick="filterTableByCategory('EXCEPTION')">
+            <div class="stat-top">
+              <span class="stat-kicker">04 / Exceptions</span>
+              <svg class="alf-icon" viewBox="0 0 24 24">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <line class="accent-stroke" x1="12" y1="9" x2="12" y2="13"/>
+                <circle class="accent-fill" cx="12" cy="17" r="1"/>
+              </svg>
             </div>
-            <div class="stat-value-row">
-              <h2 class="stat-value" id="statExceptions"><span class="spinner-border spinner-border-sm"></span></h2>
-              <span class="stat-meta-pill" style="color: #dc2626; background: #fef2f2;">Holds</span>
-            </div>
-            <div class="stat-bar-track"><div class="stat-bar-fill" id="barExceptions" style="width: 8%; background: #ef4444;"></div></div>
+            <h2 class="stat-value" id="statExceptions">-</h2>
+            <span class="stat-foot">Customs holds &amp; returns</span>
           </div>
 
           <div class="stat-card" id="pendingCardWrapper" onclick="loadTransfers()">
-            <div class="stat-card-top">
-              <span class="stat-title">Pending Inbound</span>
-              <div class="stat-icon-wrapper icon-pending"><i class="bi bi-inbox-fill"></i></div>
+            <div class="stat-top">
+              <span class="stat-kicker">05 / Pending Inbound</span>
+              <svg class="alf-icon" viewBox="0 0 24 24">
+                <polyline class="accent-stroke" points="8 12 12 16 16 12"/>
+                <line class="accent-stroke" x1="12" y1="3" x2="12" y2="16"/>
+                <path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/>
+              </svg>
             </div>
-            <div class="stat-value-row">
-              <h2 class="stat-value" id="statPending"><span class="spinner-border spinner-border-sm"></span></h2>
-              <span class="stat-meta-pill" style="color: #d97706; background: #fffbeb;">Receive &rarr;</span>
-            </div>
-            <div class="stat-bar-track"><div class="stat-bar-fill" style="width: 35%; background: #f59e0b;"></div></div>
+            <h2 class="stat-value" id="statPending">-</h2>
+            <span class="stat-foot">Awaiting branch receipt &rarr;</span>
           </div>
         </div>
 
-        <!-- Bento Row: Active Destination Corridors & Quick Workflow Launchpad -->
-        <div class="bento-insights-grid">
-          <div class="bento-card">
-            <h3 class="bento-title">
-              <span><i class="bi bi-globe-central-south-asia text-primary me-2"></i>Top Destination Corridors</span>
-              <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 500;">Click corridor to filter table</span>
-            </h3>
-            <div class="corridor-pills" id="corridorBreakdown">
-              <div style="color: var(--text-muted); font-size: 0.8rem;">Calculating active corridors...</div>
-            </div>
-          </div>
-
-          <div class="bento-card">
-            <h3 class="bento-title">
-              <span><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Quick Operations Launchpad</span>
-            </h3>
-            <div class="quick-actions-grid">
-              <button class="quick-action-tile btn-press" onclick="loadBookingForm()">
-                <div class="qa-icon" style="background:#eef2ff; color:#4f46e5;"><i class="bi bi-cloud-arrow-down-fill"></i></div>
-                <div>
-                  <span class="qa-title">Fetch Online Order</span>
-                  <span class="qa-sub">api.alfarhaonline.com</span>
-                </div>
-              </button>
-              <button class="quick-action-tile btn-press" onclick="loadStatusUpdate()">
-                <div class="qa-icon" style="background:#ecfdf5; color:#059669;"><i class="bi bi-upc-scan"></i></div>
-                <div>
-                  <span class="qa-title">Scan &amp; Update</span>
-                  <span class="qa-sub">Milestones &amp; Dockets</span>
-                </div>
-              </button>
-              <button class="quick-action-tile btn-press" onclick="loadTransfers()">
-                <div class="qa-icon" style="background:#fffbeb; color:#d97706;"><i class="bi bi-truck"></i></div>
-                <div>
-                  <span class="qa-title">Branch Transfers</span>
-                  <span class="qa-sub">Dispatch &amp; Inbound</span>
-                </div>
-              </button>
-              <button class="quick-action-tile btn-press" onclick="loadConsolidation()">
-                <div class="qa-icon" style="background:#f3e8ff; color:#7c3aed;"><i class="bi bi-layers-fill"></i></div>
-                <div>
-                  <span class="qa-title">Master Bag</span>
-                  <span class="qa-sub">Hub Consolidation</span>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Shipments Command Table -->
-        <div class="content-card">
-          <div class="table-toolbar">
-            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-              <h3 style="font-family: 'Lexend', sans-serif; font-weight: 700; font-size: 1rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-                <i class="bi bi-table text-primary"></i> Live Shipments Stream
-              </h3>
+        <!-- Waybill Register (Defaults to In-Transit view) -->
+        <div class="register-sheet">
+          <div class="sheet-header">
+            <div class="sheet-title-group">
+              <h3 class="sheet-title">Waybill Register</h3>
               <div class="filter-pills">
-                <button class="filter-pill-btn active btn-press" id="filterBtn-ALL" onclick="filterTableByCategory('ALL')">All</button>
-                <button class="filter-pill-btn btn-press" id="filterBtn-TRANSIT" onclick="filterTableByCategory('TRANSIT')">In-Transit</button>
-                <button class="filter-pill-btn btn-press" id="filterBtn-DELIVERED" onclick="filterTableByCategory('DELIVERED')">Delivered</button>
-                <button class="filter-pill-btn btn-press" id="filterBtn-EXCEPTION" onclick="filterTableByCategory('EXCEPTION')">Exceptions</button>
+                <button class="filter-pill-btn active" id="filterBtn-TRANSIT" onclick="filterTableByCategory('TRANSIT')">In-Transit</button>
+                <button class="filter-pill-btn" id="filterBtn-ALL" onclick="filterTableByCategory('ALL')">All Shipments</button>
+                <button class="filter-pill-btn" id="filterBtn-DELIVERED" onclick="filterTableByCategory('DELIVERED')">Delivered</button>
+                <button class="filter-pill-btn" id="filterBtn-EXCEPTION" onclick="filterTableByCategory('EXCEPTION')">Exceptions</button>
               </div>
             </div>
 
             <div class="table-inline-filter">
-              <i class="bi bi-funnel" style="color: #94a3b8; font-size: 0.85rem;"></i>
-              <input type="text" id="inlineTableSearch" placeholder="Filter by AWB or destination..." oninput="renderRecentShipmentsTable()">
+              <svg class="alf-icon" style="width: 15px; height: 15px; color: var(--brand-purple);" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"/><line class="accent-stroke" x1="20" y1="20" x2="16.2" y2="16.2"/>
+              </svg>
+              <input type="text" id="inlineTableSearch" placeholder="Search waybill or destination..." oninput="renderRecentShipmentsTable()">
             </div>
           </div>
 
@@ -1301,14 +1105,14 @@
             <table class="minimal-table">
               <thead>
                 <tr>
-                  <th>Booking AWB</th>
-                  <th>Destination Corridor</th>
-                  <th>Current Milestone</th>
-                  <th style="text-align: right;">Quick Track</th>
+                  <th>Waybill No.</th>
+                  <th>Destination</th>
+                  <th>Current Status</th>
+                  <th style="text-align: right;">Details</th>
                 </tr>
               </thead>
               <tbody id="recentTableBody">
-                <tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);"><span class="spinner-border spinner-border-sm"></span> Syncing live branch telemetry...</td></tr>
+                <tr><td colspan="4" style="text-align: center; padding: 36px; color: var(--text-muted);">Loading branch waybills...</td></tr>
               </tbody>
             </table>
           </div>
