@@ -1,7 +1,7 @@
 /**
  * js/dashboard.js
- * Modern Command Center Controller for dashboard.html
- * Self-contained with built-in Google Apps Script API client & navigation helpers.
+ * Al-Farha Cargo — Branch Operations Dashboard Controller
+ * Defaults to In-Transit shipments view and includes built-in Google Apps Script API bridge.
  */
 
 const GOOGLE_API_URL = window.GOOGLE_API_URL || "https://script.google.com/macros/s/AKfycbwycWJw0iiCfF9ZFfj3rNpBsfiITySuJrvlSgmFW10aFBR1Qx0xwmTv30jRlZW83f-oSw/exec";
@@ -50,13 +50,9 @@ if (!window.google || !window.google.script) {
 var sessionUser = JSON.parse(localStorage.getItem('afc_user') || 'null');
 var activeDeliveryPkg = null;
 var cachedRecentBookings = [];
-var activeCategoryFilter = 'ALL';
 
-var quotes = [
-  'Real-time telemetry across Salalah, Duqm & international corridors.',
-  'Deliver joy, one package at a time.',
-  'Every package is a promise — tracked from origin to doorstep.'
-];
+// Default view set to IN-TRANSIT as requested
+var activeCategoryFilter = 'TRANSIT';
 
 function formatDateToDDMMMYYYY(dateInput) {
   if (!dateInput) return 'N/A';
@@ -67,7 +63,6 @@ function formatDateToDDMMMYYYY(dateInput) {
   return day + ' ' + monthNames[d.getMonth()] + ' ' + d.getFullYear();
 }
 
-// Instant keyboard shortcut '/' to focus search (no sluggish animation on keyboard shortcut)
 document.addEventListener('keydown', function (e) {
   if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
     e.preventDefault();
@@ -94,12 +89,12 @@ function initializeDashboard() {
   if (hour < 12) greeting = "Good morning";
   else if (hour < 18) greeting = "Good afternoon";
 
-  var firstName = (sessionUser.name || 'Operator').split(' ')[0];
+  var firstName = (sessionUser.name || 'Team').split(' ')[0];
   var welcomeEl = document.getElementById('welcomeMsg');
   if (welcomeEl) welcomeEl.innerText = greeting + ', ' + firstName;
 
   var quoteEl = document.getElementById('quoteMsg');
-  if (quoteEl) quoteEl.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+  if (quoteEl) quoteEl.innerText = (sessionUser.branch || 'Head Office') + ' • Active Dispatch & Waybill Desk';
 
   fetchDashboardMetrics();
 }
@@ -149,7 +144,7 @@ function markDeliveryRead() {
       readIds.push(activeDeliveryPkg.id);
       localStorage.setItem('afc_read_deliveries', JSON.stringify(readIds));
     }
-    AFC_API.call('markNotificationRead', { bookingID: activeDeliveryPkg.id }).catch(function () {});
+    window.AFC_API.call('markNotificationRead', { bookingID: activeDeliveryPkg.id }).catch(function () {});
   }
   document.getElementById('deliveryAlertOverlay').classList.remove('active');
   activeDeliveryPkg = null;
@@ -165,48 +160,20 @@ function notifyPartyAction() {
   var shipperName = activeDeliveryPkg.shipperName || "Customer";
   var awb = activeDeliveryPkg.id;
   var dest = activeDeliveryPkg.dest;
-  var message = "Hello *" + shipperName + "*! Great news! Your shipment with *Al-Farha Cargo* has been DELIVERED.\n\nBooking ID: " + awb + "\nDestination: " + dest + "\n\nThank you for choosing Al-Farha Cargo!";
+  var message = "Hello *" + shipperName + "*! Your shipment with *Al-Farha Cargo* has been DELIVERED.\n\nWaybill: " + awb + "\nDestination: " + dest + "\n\nThank you for choosing Al-Farha Cargo.";
   window.open("https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(message), '_blank');
   markDeliveryRead();
 }
 
 function filterTableByCategory(cat) {
   activeCategoryFilter = cat;
-  ['ALL', 'TRANSIT', 'DELIVERED', 'EXCEPTION'].forEach(function (c) {
+  ['TRANSIT', 'ALL', 'DELIVERED', 'EXCEPTION'].forEach(function (c) {
     var btn = document.getElementById('filterBtn-' + c);
     if (btn) btn.classList.toggle('active', c === cat);
+    var card = document.getElementById('cardFilter-' + c);
+    if (card) card.classList.toggle('active-filter', c === cat);
   });
   renderRecentShipmentsTable();
-}
-
-function filterByCorridorText(destText) {
-  var inp = document.getElementById('inlineTableSearch');
-  if (inp) {
-    inp.value = inp.value === destText ? '' : destText;
-    renderRecentShipmentsTable();
-  }
-}
-
-function renderCorridorBreakdown(bookings) {
-  var container = document.getElementById('corridorBreakdown');
-  if (!container) return;
-  if (!bookings || bookings.length === 0) {
-    container.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem;">No recent corridors</div>';
-    return;
-  }
-  var counts = {};
-  bookings.forEach(function (b) {
-    var d = String(b.destination || 'Unknown').trim();
-    counts[d] = (counts[d] || 0) + 1;
-  });
-  var sorted = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 6);
-  container.innerHTML = sorted.map(function (dest) {
-    var safeDest = dest.replace(/'/g, "\'");
-    return '<div class="corridor-item btn-press" onclick="filterByCorridorText(\'' + safeDest + '\')">' +
-      '<span class="corridor-name"><i class="bi bi-geo-alt-fill text-primary me-1"></i>' + dest + '</span>' +
-      '<span class="corridor-count">' + counts[dest] + '</span>' +
-      '</div>';
-  }).join('');
 }
 
 function renderRecentShipmentsTable() {
@@ -230,30 +197,29 @@ function renderRecentShipmentsTable() {
   });
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 36px;">No matching shipments in this view.</td></tr>';
+    var emptyLabel = activeCategoryFilter === 'TRANSIT'
+      ? 'No in-transit shipments at the moment. Switch to "All Shipments" to view delivered records.'
+      : 'No shipments match this filter.';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 34px;">' + emptyLabel + '</td></tr>';
     return;
   }
 
   tbody.innerHTML = filtered.map(function (b) {
     var sUpper = String(b.status || '').toUpperCase();
-    var badgeStyle = "background: #eff6ff; color: #2563eb; border-color: #bfdbfe;";
-    var icon = "bi-truck";
+    var badgeStyle = "background: #293B4A; color: #FFFFFF;";
     if (sUpper.includes('DELIVERED')) {
-      badgeStyle = "background: #ecfdf5; color: #059669; border-color: #a7f3d0;";
-      icon = "bi-check2-circle";
+      badgeStyle = "background: #713280; color: #FFFFFF;";
     } else if (sUpper.includes('RETURN') || sUpper.includes('CANCEL') || sUpper.includes('FAIL') || sUpper.includes('HOLD') || sUpper.includes('EXCEPTION')) {
-      badgeStyle = "background: #fef2f2; color: #dc2626; border-color: #fecaca;";
-      icon = "bi-exclamation-triangle-fill";
+      badgeStyle = "background: #291D30; color: #F5EDE1;";
     } else if (sUpper.includes('BOOK') || sUpper.includes('PENDING')) {
-      badgeStyle = "background: #fffbeb; color: #d97706; border-color: #fde68a;";
-      icon = "bi-box-seam";
+      badgeStyle = "background: #EE7E05; color: #1E1E1C;";
     }
     var safeId = String(b.id).replace(/'/g, "\'");
     return '<tr onclick="trackSpecificAwb(\'' + safeId + '\')">' +
-      '<td><span class="awb-mono-chip"><i class="bi bi-box-seam-fill"></i>' + b.id + '</span></td>' +
-      '<td style="font-weight: 500; color: var(--text-primary);"><i class="bi bi-geo-alt text-muted me-1"></i>' + b.destination + '</td>' +
-      '<td><span class="status-badge" style="' + badgeStyle + '"><i class="bi ' + icon + '"></i>' + b.status + '</span></td>' +
-      '<td style="text-align: right; font-family: \'Lexend\', sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--brand-primary);">Inspect &rarr;</td>' +
+      '<td><span class="awb-code">' + b.id + '</span></td>' +
+      '<td style="font-weight: 600;">' + b.destination + '</td>' +
+      '<td><span class="status-badge" style="' + badgeStyle + '">' + b.status + '</span></td>' +
+      '<td style="text-align: right; font-size: 0.8rem; font-weight: 700; color: var(--brand-purple);">View &rarr;</td>' +
       '</tr>';
   }).join('');
 }
@@ -269,31 +235,10 @@ function trackSpecificAwb(awb) {
 function fetchDashboardMetrics() {
   google.script.run
     .withSuccessHandler(function (data) {
-      var total = data.totalBookings || 0;
-      var transit = data.inTransit || 0;
-      var delivered = data.delivered || 0;
-      var exceptions = data.exceptions || 0;
-
-      document.getElementById('statTotal').innerText = total;
-      document.getElementById('statTransit').innerText = transit;
-      document.getElementById('statDelivered').innerText = delivered;
-      document.getElementById('statExceptions').innerText = exceptions;
-
-      if (total > 0) {
-        var delivPct = Math.round((delivered / total) * 100);
-        var transPct = Math.round((transit / total) * 100);
-        var excPct = Math.max(4, Math.round((exceptions / total) * 100));
-        var dPctEl = document.getElementById('statDeliveredPct');
-        var tPctEl = document.getElementById('statTransitPct');
-        if (dPctEl) dPctEl.innerText = delivPct + '% Rate';
-        if (tPctEl) tPctEl.innerText = transPct + '% Active';
-        var barD = document.getElementById('barDelivered');
-        var barT = document.getElementById('barTransit');
-        var barE = document.getElementById('barExceptions');
-        if (barD) barD.style.width = delivPct + '%';
-        if (barT) barT.style.width = transPct + '%';
-        if (barE) barE.style.width = excPct + '%';
-      }
+      document.getElementById('statTotal').innerText = data.totalBookings || 0;
+      document.getElementById('statTransit').innerText = data.inTransit || 0;
+      document.getElementById('statDelivered').innerText = data.delivered || 0;
+      document.getElementById('statExceptions').innerText = data.exceptions || 0;
 
       var pendingCount = data.pendingInbounds || 0;
       var statPendingEl = document.getElementById('statPending');
@@ -326,26 +271,27 @@ function fetchDashboardMetrics() {
             var div = document.createElement('div');
             div.className = 'notif-item';
             div.onclick = function () { triggerDeliveryPopup(item); };
-            div.innerHTML = '<div class="notif-icon"><i class="bi bi-box-seam-fill"></i></div><div class="notif-content"><span class="notif-title">' + item.id + ' Delivered</span><span class="notif-desc">Arrived at ' + item.dest + '</span></div>';
+            div.innerHTML = '<div><span class="notif-title">' + item.id + ' Delivered</span><span class="notif-desc">Destination: ' + item.dest + '</span></div>';
             notifList.appendChild(div);
           });
         } else {
           bellBadge.classList.remove('show');
           countLabel.innerText = "0 New";
-          notifList.innerHTML = '<div class="notif-empty">No unread deliveries</div>';
+          notifList.innerHTML = '<div class="notif-empty">No unread delivery notices</div>';
         }
       } else {
         bellBadge.classList.remove('show');
         countLabel.innerText = "0 New";
-        notifList.innerHTML = '<div class="notif-empty">No unread deliveries</div>';
+        notifList.innerHTML = '<div class="notif-empty">No unread delivery notices</div>';
       }
 
       cachedRecentBookings = data.recentBookings || [];
-      renderCorridorBreakdown(cachedRecentBookings);
+
+      // If default TRANSIT filter has 0 items in recentBookings but recentBookings has items, keep TRANSIT selected or show clear message
       renderRecentShipmentsTable();
     })
     .withFailureHandler(function (error) {
-      document.getElementById('recentTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; color: #dc2626; padding: 24px;">Error loading telemetry: ' + error.message + '</td></tr>';
+      document.getElementById('recentTableBody').innerHTML = '<tr><td colspan="4" style="text-align: center; color: #291D30; padding: 24px;">Unable to load records: ' + error.message + '</td></tr>';
     })
     .getDashboardSummary(sessionUser.branch, sessionUser.role);
 }
@@ -357,26 +303,26 @@ function executeSearch() {
   if (!searchVal) return;
 
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+  btn.innerText = '...';
   alertBox.style.display = 'none';
 
   google.script.run
     .withSuccessHandler(function (res) {
       btn.disabled = false;
-      btn.innerHTML = 'Track';
+      btn.innerText = 'Track';
       if (res.success) {
         renderTrackingData(res.details, res.history);
         document.getElementById('trackingModalOverlay').classList.add('active');
         document.getElementById('searchInput').value = '';
       } else {
-        alertBox.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> ' + res.message;
+        alertBox.innerText = res.message;
         alertBox.style.display = 'block';
       }
     })
     .withFailureHandler(function (error) {
       btn.disabled = false;
-      btn.innerHTML = 'Track';
-      alertBox.innerHTML = '<i class="bi bi-wifi-off me-1"></i> Connection Error: ' + error.message;
+      btn.innerText = 'Track';
+      alertBox.innerText = 'Connection Error: ' + error.message;
       alertBox.style.display = 'block';
     })
     .fetchCompleteTracking(searchVal);
@@ -391,17 +337,9 @@ document.getElementById('trackingModalOverlay').addEventListener('click', functi
 });
 
 function renderTrackingData(pkg, history) {
-  document.getElementById('lblAwb').innerHTML = '<i class="bi bi-box-seam-fill" style="color: var(--brand-primary);"></i> ' + pkg.id;
+  document.getElementById('lblAwb').innerText = 'AWB #' + pkg.id;
   var badge = document.getElementById('lblStatusBadge');
-  var s = String(pkg.status || '').toLowerCase();
-
-  if (s.includes('delivered')) {
-    badge.innerHTML = '<i class="bi bi-check2-circle" style="color: #10b981;"></i> Delivered';
-  } else if (s.includes('cancel') || s.includes('return') || s.includes('fail') || s.includes('hold') || s.includes('exception')) {
-    badge.innerHTML = '<i class="bi bi-exclamation-circle" style="color: #ef4444;"></i> Exception';
-  } else {
-    badge.innerHTML = '<i class="bi bi-arrow-repeat" style="color: var(--brand-primary);"></i> ' + pkg.status;
-  }
+  badge.innerText = pkg.status || 'Active';
 
   var originParts = String(pkg.origin || '').split(',');
   var originCity = originParts[0] ? originParts[0].trim() : '---';
@@ -411,7 +349,7 @@ function renderTrackingData(pkg, history) {
   var destCity = destParts[0] ? destParts[0].trim() : '---';
   var destCountry = destParts[1] ? destParts[1].trim() : '';
 
-  document.getElementById('lblRoute').innerHTML = '<div class="route-display"><div class="route-point"><span class="route-city">' + originCity + '</span>' + (originCountry ? '<span class="route-country">' + originCountry + '</span>' : '') + '</div><div class="route-divider"><i class="bi bi-airplane-engines-fill" style="color: var(--brand-primary);"></i></div><div class="route-point"><span class="route-city">' + destCity + '</span>' + (destCountry ? '<span class="route-country">' + destCountry + '</span>' : '') + '</div></div>';
+  document.getElementById('lblRoute').innerHTML = '<div class="route-display"><div class="route-point"><span class="route-city">' + originCity + '</span>' + (originCountry ? '<span class="route-country">' + originCountry + '</span>' : '') + '</div><span style="color: var(--cargo-orange); font-weight: 700;">&rarr;</span><div class="route-point" style="text-align: right;"><span class="route-city">' + destCity + '</span>' + (destCountry ? '<span class="route-country">' + destCountry + '</span>' : '') + '</div></div>';
   document.getElementById('stepperLabelOrigin').innerHTML = '<span class="stepper-loc-city">' + originCity + '</span>' + (originCountry ? '<span class="stepper-loc-country">' + originCountry + '</span>' : '');
   document.getElementById('stepperLabelTransit').innerHTML = '<span class="stepper-transit">In-Transit</span>';
   document.getElementById('stepperLabelDest').innerHTML = '<span class="stepper-loc-city">' + destCity + '</span>' + (destCountry ? '<span class="stepper-loc-country">' + destCountry + '</span>' : '');
@@ -427,10 +365,10 @@ function renderTrackingData(pkg, history) {
   var docket = pkg.fwdDocket || pkg.docket || '';
   if (agent && agent !== 'N/A' && docket && docket !== 'N/A') {
     document.getElementById('lbl3rdPartyName').innerText = agent;
-    document.getElementById('lbl3rdPartyDocket').innerText = 'AWB: ' + docket;
+    document.getElementById('lbl3rdPartyDocket').innerText = 'Docket: ' + docket;
   } else {
     document.getElementById('lbl3rdPartyName').innerText = "Internal Network";
-    document.getElementById('lbl3rdPartyDocket').innerText = "Direct Al-Farha Linehaul";
+    document.getElementById('lbl3rdPartyDocket').innerText = "Direct Linehaul";
   }
 
   updateStepper(pkg.status);
@@ -439,7 +377,7 @@ function renderTrackingData(pkg, history) {
   tlContainer.innerHTML = '';
 
   if (!history || history.length === 0) {
-    tlContainer.innerHTML = '<div style="text-align: center; padding: 36px 20px; color: #94a3b8;">No scan events recorded yet.</div>';
+    tlContainer.innerHTML = '<div style="text-align: center; padding: 32px 20px; color: var(--text-muted);">No scan history recorded yet.</div>';
   } else {
     history.forEach(function (event, index) {
       var div = document.createElement('div');
@@ -453,9 +391,9 @@ function renderTrackingData(pkg, history) {
 
       var rmk = (event.remark || "").trim();
       var showRemark = rmk !== "" && !rmk.startsWith("Verified via") && !rmk.startsWith("Auto-fetched from");
-      var remarkHtml = showRemark ? '<span><i class="bi bi-chat-left-text"></i> ' + rmk + '</span>' : '';
+      var remarkHtml = showRemark ? '<span>Note: ' + rmk + '</span>' : '';
 
-      div.innerHTML = '<div class="time-col"><span class="tl-date">' + dateOnly + '</span><span class="tl-time">' + timeOnly + '</span></div><div class="node-col"><div class="node-line"></div><div class="node-dot"></div></div><div class="content-col"><div class="tl-card"><span class="tl-status">' + event.status + '</span><div class="tl-meta"><span><i class="bi bi-geo-alt"></i> ' + (event.location || 'Network Hub') + '</span>' + remarkHtml + '</div></div></div>';
+      div.innerHTML = '<div class="time-col"><span class="tl-date">' + dateOnly + '</span><span class="tl-time">' + timeOnly + '</span></div><div class="node-col"><div class="node-line"></div><div class="node-dot"></div></div><div class="content-col"><div class="tl-card"><span class="tl-status">' + event.status + '</span><div class="tl-meta"><span>Location: ' + (event.location || 'Network Hub') + '</span>' + remarkHtml + '</div></div></div>';
       tlContainer.appendChild(div);
     });
   }
