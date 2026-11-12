@@ -3,38 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Al-Farha Cargo — Branch Operations</title>
+  <title>Al-Farha Cargo — Dashboard</title>
 
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#F5EDE1">
+  <meta name="theme-color" content="#FAF7F2">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <!-- Session & Auto-Redirect Guard -->
   <script src="/auth-guard.js"></script>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/brand-colors.css">
 
   <style>
     :root {
-      /* Official Al-Farha Cargo Brand Palette (Nov 2026) */
+      /* Al-Farha Brand Palette — Refined Light Aesthetic */
       --cargo-orange: #EE7E05;
       --brand-purple: #713280;
       --charcoal: #1E1E1C;
       --warm-beige: #F5EDE1;
-      --warm-beige-soft: #FAF6F0;
       --deep-plum: #291D30;
       --charcoal-blue: #293B4A;
       --white: #FFFFFF;
 
-      --border-line: #E2D7C5;
-      --border-strong: #CBBBA4;
-      --text-body: #1E1E1C;
-      --text-muted: #665E54;
-      --sidebar-w: 256px;
+      /* Soft, Airy Surface Tokens */
+      --bg-canvas: #FAF7F2;
+      --bg-subtle: #F3ECE2;
+      --border-soft: rgba(30, 30, 28, 0.07);
+      --border-hover: rgba(113, 50, 128, 0.28);
+      --text-primary: #1E1E1C;
+      --text-secondary: #57534E;
+      --text-muted: #8A8279;
+      --shadow-soft: 0 4px 20px -2px rgba(30, 30, 28, 0.04), 0 1px 3px rgba(30, 30, 28, 0.02);
+      --shadow-float: 0 12px 32px -4px rgba(30, 30, 28, 0.07);
+      --sidebar-w: 252px;
       --sidebar-collapsed-w: 76px;
-      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -44,47 +49,39 @@
       padding: 0;
       height: 100vh;
       overflow: hidden;
-      background-color: var(--warm-beige);
-      font-family: 'DM Sans', Arial, sans-serif;
-      color: var(--charcoal);
+      background-color: var(--bg-canvas);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
     }
 
     .d-none { display: none !important; }
 
-    /* Custom Dual-Tone Line Icons */
-    .alf-icon {
-      width: 20px;
-      height: 20px;
+    /* Minimalist 1.6px Stroke Icons */
+    .ui-icon {
+      width: 18px;
+      height: 18px;
       stroke: currentColor;
-      stroke-width: 1.8;
+      stroke-width: 1.65;
       stroke-linecap: round;
       stroke-linejoin: round;
       fill: none;
       flex-shrink: 0;
     }
-    .alf-icon .accent-stroke {
-      stroke: var(--cargo-orange);
-    }
-    .alf-icon .accent-fill {
-      fill: var(--cargo-orange);
-      stroke: none;
-    }
 
-    /* App Layout */
     .app-layout {
       display: flex;
       height: 100vh;
       width: 100vw;
     }
 
-    /* Editorial Stationery Sidebar (White Paper, Charcoal Ink, Purple Kicker, Orange Bottom Bar) */
+    /* Serene, Minimal White Sidebar */
     .sidebar {
       width: var(--sidebar-w);
       background: var(--white);
-      border-right: 1px solid var(--border-line);
+      border-right: 1px solid var(--border-soft);
       height: 100vh;
-      padding: 22px 18px;
+      padding: 28px 18px 22px 18px;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
@@ -92,31 +89,18 @@
     }
     .sidebar.collapsed {
       width: var(--sidebar-collapsed-w);
-      padding: 22px 12px;
+      padding: 28px 12px 22px 12px;
     }
     .sidebar-header {
-      padding: 0 4px 18px 4px;
-      margin-bottom: 18px;
-      border-bottom: 1px solid var(--border-line);
+      padding: 0 8px 24px 8px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
     }
     .sidebar.collapsed .brand-lockup-svg,
     .sidebar.collapsed .nav-text,
-    .sidebar.collapsed .user-details,
-    .sidebar.collapsed .sidebar-kicker {
+    .sidebar.collapsed .user-details {
       display: none;
-    }
-
-    .sidebar-kicker {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--brand-purple);
-      padding: 0 10px;
-      margin-bottom: 8px;
     }
 
     .nav-menu {
@@ -126,41 +110,44 @@
       flex: 1;
     }
     .nav-item {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       font-weight: 500;
-      padding: 10px 12px;
-      border-radius: 8px;
+      padding: 11px 14px;
+      border-radius: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 12px;
-      color: var(--charcoal);
-      transition: background-color 140ms ease, color 140ms ease, transform 140ms var(--ease-out);
+      color: var(--text-secondary);
+      transition: background-color 160ms ease, color 160ms ease, transform 140ms var(--ease-out);
       user-select: none;
     }
     .nav-item:hover {
-      background-color: var(--warm-beige-soft);
-      color: var(--brand-purple);
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
     }
     .nav-item:active {
       transform: scale(0.98);
     }
     .nav-item.active {
-      background-color: var(--brand-purple);
-      color: var(--white);
+      background-color: #F6EFF8;
+      color: var(--brand-purple);
       font-weight: 600;
     }
-    .nav-item.active .alf-icon .accent-stroke {
-      stroke: var(--cargo-orange);
+    .nav-item.active .ui-icon {
+      stroke: var(--brand-purple);
+      stroke-width: 1.9;
     }
 
     .sidebar-footer {
-      padding-top: 16px;
-      border-top: 1px solid var(--border-line);
+      padding: 14px 12px;
+      background: var(--bg-canvas);
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      margin-top: auto;
     }
     .user-details {
       display: flex;
@@ -168,41 +155,39 @@
       min-width: 0;
     }
     .user-name {
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--charcoal);
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-primary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .user-branch {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .btn-logout {
-      background: var(--warm-beige-soft);
-      border: 1px solid var(--border-line);
-      color: var(--charcoal);
-      width: 34px;
-      height: 34px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background-color 140ms ease, color 140ms ease, transform 140ms var(--ease-out);
+      transition: background-color 150ms ease, color 150ms ease;
     }
     .btn-logout:hover {
-      background: var(--deep-plum);
-      color: var(--warm-beige);
-      border-color: var(--deep-plum);
+      background: rgba(30, 30, 28, 0.06);
+      color: var(--text-primary);
     }
-    .btn-logout:active { transform: scale(0.96); }
 
-    /* Main Workspace */
+    /* Main Content Area */
     .main-content {
       flex: 1;
       display: flex;
@@ -211,146 +196,150 @@
       overflow-y: auto;
     }
     .main-content::-webkit-scrollbar { width: 6px; }
-    .main-content::-webkit-scrollbar-thumb { background: #C8B79E; border-radius: 4px; }
+    .main-content::-webkit-scrollbar-thumb { background: #D9CFC2; border-radius: 6px; }
 
-    /* Digital Header in Charcoal Blue (#293B4A) with White Lettering & Cargo Orange (#EE7E05) Accent */
-    .digital-header {
-      background: var(--charcoal-blue);
-      color: var(--white);
-      border-bottom: 3px solid var(--cargo-orange);
-      padding: 18px 32px;
+    /* Airy, Minimal Top Bar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(250, 247, 242, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 24px 40px 18px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 30;
     }
     .header-left {
       display: flex;
       flex-direction: column;
-      gap: 2px;
-    }
-    .header-kicker {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--cargo-orange);
+      gap: 3px;
     }
     .page-title {
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       font-weight: 700;
       margin: 0;
-      color: var(--white);
-      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      letter-spacing: -0.025em;
     }
     .page-subtitle {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.82rem;
+      color: var(--text-muted);
       margin: 0;
+      font-weight: 400;
     }
 
-    /* Search & Header Controls */
+    /* Elegant Search & Actions */
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
     .compact-search {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       background: var(--white);
-      border-radius: 8px;
-      padding: 4px 5px 4px 12px;
-      min-width: 290px;
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      padding: 5px 6px 5px 16px;
+      min-width: 300px;
       position: relative;
-      border: 1px solid transparent;
+      box-shadow: var(--shadow-soft);
+      transition: border-color 160ms ease, box-shadow 160ms ease;
     }
     .compact-search:focus-within {
-      border-color: var(--cargo-orange);
-      box-shadow: 0 0 0 3px rgba(238, 126, 5, 0.25);
+      border-color: var(--brand-purple);
+      box-shadow: 0 0 0 3px rgba(113, 50, 128, 0.1);
     }
     .search-input-widget {
       flex: 1;
       border: none;
       background: transparent;
-      font-family: 'DM Sans', Arial, sans-serif;
-      font-size: 0.86rem;
+      font-family: inherit;
+      font-size: 0.84rem;
       font-weight: 500;
-      color: var(--charcoal);
+      color: var(--text-primary);
       outline: none;
     }
     .search-input-widget::placeholder {
-      color: #8C8275;
+      color: var(--text-muted);
+      font-weight: 400;
     }
     .btn-search-hero {
-      background: var(--cargo-orange);
-      color: var(--charcoal);
+      background: var(--charcoal-blue);
+      color: var(--white);
       border: none;
-      padding: 7px 14px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.8rem;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.78rem;
       cursor: pointer;
-      transition: background-color 140ms ease, transform 140ms var(--ease-out);
+      transition: background-color 150ms ease, transform 140ms var(--ease-out);
     }
-    .btn-search-hero:hover { background: #FF8C1A; }
+    .btn-search-hero:hover { background: var(--brand-purple); }
     .btn-search-hero:active { transform: scale(0.97); }
 
     .btn-new-booking {
-      background: transparent;
-      color: var(--white);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 8px 14px;
-      border-radius: 8px;
+      background: var(--cargo-orange);
+      color: var(--charcoal);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-family: inherit;
       font-weight: 600;
       font-size: 0.82rem;
       display: inline-flex;
       align-items: center;
       gap: 7px;
       cursor: pointer;
-      transition: background-color 140ms ease, border-color 140ms ease, transform 140ms var(--ease-out);
+      box-shadow: 0 4px 14px rgba(238, 126, 5, 0.22);
+      transition: background-color 150ms ease, transform 140ms var(--ease-out), box-shadow 150ms ease;
     }
     .btn-new-booking:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--white);
+      background: #F58814;
+      box-shadow: 0 6px 18px rgba(238, 126, 5, 0.3);
     }
     .btn-new-booking:active { transform: scale(0.97); }
 
     /* Notification Bell */
     .notification-wrapper { position: relative; }
     .btn-bell {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
+      background: var(--white);
+      border: 1px solid var(--border-soft);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--white);
+      color: var(--text-secondary);
       cursor: pointer;
-      transition: background-color 140ms ease, transform 140ms var(--ease-out);
+      box-shadow: var(--shadow-soft);
+      transition: border-color 150ms ease, color 150ms ease, transform 140ms var(--ease-out);
     }
-    .btn-bell:hover { background: rgba(255, 255, 255, 0.18); }
+    .btn-bell:hover {
+      border-color: var(--border-hover);
+      color: var(--brand-purple);
+    }
     .btn-bell:active { transform: scale(0.96); }
     .bell-badge {
       position: absolute;
-      top: -5px;
-      right: -5px;
+      top: -2px;
+      right: -2px;
       background: var(--cargo-orange);
       color: var(--charcoal);
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 700;
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      border: 2px solid var(--charcoal-blue);
+      border: 2px solid var(--white);
       display: none;
       align-items: center;
       justify-content: center;
@@ -359,19 +348,18 @@
 
     .notif-dropdown {
       position: absolute;
-      top: calc(100% + 8px);
+      top: calc(100% + 10px);
       right: 0;
-      width: 330px;
+      width: 320px;
       background: var(--white);
-      color: var(--charcoal);
-      border: 1px solid var(--border-strong);
-      border-radius: 10px;
-      box-shadow: 0 16px 36px rgba(30, 30, 28, 0.16);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      box-shadow: var(--shadow-float);
       opacity: 0;
       pointer-events: none;
       transform: scale(0.97) translateY(-4px);
       transform-origin: top right;
-      transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+      transition: transform 180ms var(--ease-out), opacity 180ms var(--ease-out);
       z-index: 60;
       overflow: hidden;
     }
@@ -381,101 +369,102 @@
       transform: scale(1) translateY(0);
     }
     .notif-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border-line);
-      background: var(--warm-beige-soft);
-      font-weight: 700;
-      font-size: 0.8rem;
-      color: var(--brand-purple);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-soft);
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-primary);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .notif-list { max-height: 300px; overflow-y: auto; }
+    .notif-list { max-height: 280px; overflow-y: auto; }
     .notif-item {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--warm-beige-soft);
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-soft);
       display: flex;
       align-items: flex-start;
       gap: 10px;
       cursor: pointer;
     }
-    .notif-item:hover { background: var(--warm-beige-soft); }
-    .notif-title { font-size: 0.82rem; font-weight: 700; color: var(--charcoal); display: block; }
-    .notif-desc { font-size: 0.75rem; color: var(--text-muted); }
-    .notif-empty { padding: 28px 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
+    .notif-item:hover { background: var(--bg-canvas); }
+    .notif-title { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); display: block; }
+    .notif-desc { font-size: 0.74rem; color: var(--text-muted); }
+    .notif-empty { padding: 32px 16px; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
 
-    /* Page Body */
+    /* Workspace Container */
     .workspace-body {
-      padding: 24px 32px 40px 32px;
+      padding: 8px 40px 48px 40px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      max-width: 1440px;
+      gap: 28px;
+      max-width: 1400px;
       width: 100%;
     }
 
-    /* Editorial Stationery Metric Strip (Inspired by Page 5 of ALF-Brand-Guide.pdf) */
+    /* Minimal, Airy Metric Cards */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
+      gap: 16px;
     }
     .stat-card {
       background: var(--white);
-      border: 1px solid var(--border-line);
-      border-bottom: 3px solid var(--border-strong);
-      border-radius: 10px;
-      padding: 16px 18px;
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 20px 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 10px;
+      gap: 14px;
+      box-shadow: var(--shadow-soft);
       cursor: pointer;
-      transition: border-color 140ms ease, transform 140ms var(--ease-out), box-shadow 140ms ease;
+      transition: transform 180ms var(--ease-out), border-color 180ms ease, box-shadow 180ms ease;
     }
-    .stat-card:hover {
-      border-color: var(--brand-purple);
-      border-bottom-color: var(--cargo-orange);
+    @media (hover: hover) and (pointer: fine) {
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-float);
+        border-color: var(--border-hover);
+      }
     }
-    .stat-card:active {
-      transform: scale(0.985);
-    }
+    .stat-card:active { transform: scale(0.985); }
     .stat-card.active-filter {
       border-color: var(--brand-purple);
-      border-bottom: 3px solid var(--cargo-orange);
-      box-shadow: 0 6px 18px rgba(30, 30, 28, 0.06);
+      box-shadow: 0 0 0 1px var(--brand-purple), var(--shadow-soft);
     }
-    .stat-card.alert-state {
-      border-bottom-color: var(--cargo-orange);
-    }
+
     .stat-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--brand-purple);
     }
-    .stat-kicker {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--brand-purple);
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
     }
+    .stat-icon-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ic-purple { background: #F6EFF8; color: var(--brand-purple); }
+    .ic-slate { background: #EEF3F7; color: var(--charcoal-blue); }
+    .ic-orange { background: #FFF5EB; color: var(--cargo-orange); }
+    .ic-plum { background: #F7EFF2; color: var(--deep-plum); }
+
     .stat-value {
-      font-size: 1.9rem;
+      font-size: 1.95rem;
       font-weight: 700;
-      color: var(--charcoal);
+      color: var(--text-primary);
       margin: 0;
-      line-height: 1.05;
+      line-height: 1;
+      letter-spacing: -0.03em;
       font-variant-numeric: tabular-nums;
-      letter-spacing: -0.02em;
-    }
-    .stat-foot {
-      font-size: 0.74rem;
-      color: var(--text-muted);
     }
     .live-dot {
       width: 8px;
@@ -486,16 +475,16 @@
       margin-left: 6px;
     }
 
-    /* Waybill Register Card (Stationery Sheet Style) */
-    .register-sheet {
+    /* Elegant Shipments Table Card */
+    .table-card {
       background: var(--white);
-      border: 1px solid var(--border-line);
-      border-bottom: 4px solid var(--cargo-orange);
-      border-radius: 10px;
-      padding: 20px 24px;
+      border: 1px solid var(--border-soft);
+      border-radius: 22px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
     .sheet-header {
       display: flex;
@@ -503,8 +492,6 @@
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border-line);
     }
     .sheet-title-group {
       display: flex;
@@ -513,58 +500,58 @@
       flex-wrap: wrap;
     }
     .sheet-title {
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--brand-purple);
+      color: var(--text-primary);
       margin: 0;
+      letter-spacing: -0.015em;
     }
 
-    /* Clean Segmented Filter Tabs */
+    /* Soft Pill Segmented Control */
     .filter-pills {
       display: inline-flex;
-      background: var(--warm-beige);
-      padding: 3px;
-      border-radius: 8px;
+      background: var(--bg-canvas);
+      padding: 4px;
+      border-radius: 999px;
       gap: 2px;
-      border: 1px solid var(--border-line);
+      border: 1px solid var(--border-soft);
     }
     .filter-pill-btn {
       border: none;
       background: transparent;
-      font-family: 'DM Sans', Arial, sans-serif;
+      font-family: inherit;
       font-size: 0.78rem;
       font-weight: 600;
-      color: var(--charcoal);
-      padding: 6px 13px;
-      border-radius: 6px;
+      color: var(--text-secondary);
+      padding: 6px 14px;
+      border-radius: 999px;
       cursor: pointer;
-      transition: background-color 140ms ease, color 140ms ease;
+      transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
     }
     .filter-pill-btn.active {
-      background: var(--brand-purple);
-      color: var(--white);
+      background: var(--white);
+      color: var(--brand-purple);
+      box-shadow: 0 2px 8px rgba(30, 30, 28, 0.06);
     }
 
     .table-inline-filter {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: var(--warm-beige-soft);
-      border: 1px solid var(--border-line);
-      border-radius: 8px;
-      padding: 6px 12px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      padding: 7px 14px;
       min-width: 240px;
     }
     .table-inline-filter input {
       border: none;
       background: transparent;
       outline: none;
-      font-family: 'DM Sans', Arial, sans-serif;
-      font-size: 0.82rem;
+      font-family: inherit;
+      font-size: 0.8rem;
       width: 100%;
-      color: var(--charcoal);
+      color: var(--text-primary);
     }
 
     .table-container {
@@ -576,67 +563,73 @@
       text-align: left;
     }
     .minimal-table th {
-      padding: 11px 14px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--brand-purple);
+      padding: 12px 16px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid var(--border-strong);
-      background: var(--warm-beige-soft);
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-soft);
     }
     .minimal-table td {
-      padding: 13px 14px;
-      border-bottom: 1px solid var(--border-line);
-      font-size: 0.88rem;
-      color: var(--charcoal);
+      padding: 16px;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 0.875rem;
+      color: var(--text-primary);
       vertical-align: middle;
     }
     .minimal-table tbody tr {
       cursor: pointer;
-      transition: background-color 120ms ease;
+      transition: background-color 140ms ease;
     }
     .minimal-table tbody tr:hover td {
-      background-color: var(--warm-beige-soft);
+      background-color: var(--bg-canvas);
     }
     .minimal-table tbody tr:last-child td {
       border-bottom: none;
     }
 
     .awb-code {
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 600;
-      font-size: 0.86rem;
-      color: var(--charcoal);
-      background: var(--warm-beige);
-      border: 1px solid var(--border-strong);
-      padding: 3px 9px;
-      border-radius: 5px;
+      font-size: 0.82rem;
+      color: var(--text-primary);
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-soft);
+      padding: 4px 10px;
+      border-radius: 8px;
       display: inline-block;
     }
     .status-badge {
-      padding: 4px 10px;
-      border-radius: 5px;
-      font-size: 0.74rem;
-      font-weight: 700;
-      display: inline-block;
-      letter-spacing: 0.01em;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
     }
 
     .error-alert {
       position: absolute;
-      top: calc(100% + 6px);
+      top: calc(100% + 8px);
       right: 0;
       width: 100%;
-      background: var(--deep-plum);
-      border: 1px solid var(--cargo-orange);
-      color: var(--warm-beige);
-      padding: 9px 12px;
-      border-radius: 8px;
+      background: var(--white);
+      border: 1px solid #FCA5A5;
+      color: #B91C1C;
+      padding: 10px 14px;
+      border-radius: 12px;
       font-size: 0.78rem;
-      font-weight: 600;
+      font-weight: 500;
       display: none;
       z-index: 50;
+      box-shadow: var(--shadow-float);
     }
 
     /* Modals */
@@ -647,8 +640,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(30, 30, 28, 0.55);
-      backdrop-filter: blur(4px);
+      background: rgba(30, 30, 28, 0.35);
+      backdrop-filter: blur(6px);
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -664,50 +657,48 @@
     }
     .delivery-popup-card {
       background: var(--white);
-      border-radius: 12px;
-      padding: 32px;
+      border-radius: 24px;
+      padding: 36px;
       max-width: 400px;
       width: 92%;
-      box-shadow: 0 20px 40px rgba(30, 30, 28, 0.22);
+      box-shadow: var(--shadow-float);
       text-align: center;
       transform: scale(0.96);
       transition: transform 180ms var(--ease-out);
-      border: 1px solid var(--border-line);
-      border-bottom: 4px solid var(--cargo-orange);
+      border: 1px solid var(--border-soft);
     }
     .delivery-popup-overlay.active .delivery-popup-card { transform: scale(1); }
-    .dp-title { font-size: 1.25rem; font-weight: 700; color: var(--brand-purple); margin: 12px 0 6px 0; }
-    .dp-desc { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 18px 0; }
+    .dp-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 14px 0 6px 0; }
+    .dp-desc { color: var(--text-muted); font-size: 0.85rem; margin: 0 0 20px 0; }
     .dp-details-box {
-      background: var(--warm-beige-soft);
-      border: 1px solid var(--border-line);
-      border-radius: 8px;
-      padding: 14px;
-      margin-bottom: 20px;
+      background: var(--bg-canvas);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 22px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
     .dp-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem; }
-    .dp-label { color: var(--brand-purple); font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
-    .dp-value { font-weight: 700; color: var(--charcoal); }
+    .dp-label { color: var(--text-muted); font-weight: 500; font-size: 0.78rem; }
+    .dp-value { font-weight: 600; color: var(--text-primary); }
     .dp-actions { display: flex; flex-direction: column; gap: 8px; }
     .btn-dp-primary {
       background: var(--cargo-orange);
       color: var(--charcoal);
       border: none;
       padding: 12px;
-      border-radius: 8px;
-      font-weight: 700;
+      border-radius: 12px;
+      font-weight: 600;
       font-size: 0.88rem;
       cursor: pointer;
     }
     .btn-dp-secondary {
-      background: var(--warm-beige);
-      color: var(--charcoal);
-      border: 1px solid var(--border-strong);
-      padding: 11px;
-      border-radius: 8px;
+      background: var(--bg-canvas);
+      color: var(--text-secondary);
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
       font-weight: 600;
       font-size: 0.85rem;
       cursor: pointer;
@@ -715,44 +706,43 @@
 
     /* Tracking Modal: Charcoal Blue Header per Brand Guide Page 1 */
     .tracking-modal {
-      background: var(--warm-beige);
-      border-radius: 12px;
-      max-width: 880px;
+      background: var(--bg-canvas);
+      border-radius: 24px;
+      max-width: 860px;
       width: 95%;
-      height: 85vh;
-      max-height: 85vh;
+      height: 84vh;
+      max-height: 84vh;
       overflow: hidden;
-      box-shadow: 0 24px 48px rgba(30, 30, 28, 0.28);
+      box-shadow: 0 24px 60px rgba(30, 30, 28, 0.2);
       transform: scale(0.96);
-      transition: transform 180ms var(--ease-out);
+      transition: transform 200ms var(--ease-out);
       display: flex;
       flex-direction: column;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--border-soft);
     }
     .tracking-overlay.active .tracking-modal { transform: scale(1); }
     .tracking-header {
       background: var(--charcoal-blue);
       color: var(--white);
-      padding: 18px 26px;
-      border-bottom: 4px solid var(--cargo-orange);
+      padding: 20px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .awb-header-group { display: flex; align-items: center; gap: 14px; }
-    .awb-number { font-family: 'IBM Plex Mono', monospace; font-size: 1.3rem; font-weight: 600; color: var(--white); margin: 0; }
-    .awb-status-badge { padding: 4px 11px; border-radius: 5px; font-weight: 700; font-size: 0.76rem; background: var(--cargo-orange); color: var(--charcoal); }
-    .btn-close-modal { background: rgba(255, 255, 255, 0.14); border: none; width: 32px; height: 32px; border-radius: 6px; color: var(--white); cursor: pointer; font-size: 1rem; }
-    .tracking-body { padding: 22px 26px; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
-    .stepper-container { background: var(--white); border-radius: 10px; padding: 20px; border: 1px solid var(--border-line); margin-bottom: 18px; flex-shrink: 0; }
+    .awb-number { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 600; color: var(--white); margin: 0; }
+    .awb-status-badge { padding: 4px 12px; border-radius: 999px; font-weight: 600; font-size: 0.75rem; background: var(--cargo-orange); color: var(--charcoal); }
+    .btn-close-modal { background: rgba(255, 255, 255, 0.12); border: none; width: 32px; height: 32px; border-radius: 50%; color: var(--white); cursor: pointer; font-size: 1rem; }
+    .tracking-body { padding: 24px 28px; display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    .stepper-container { background: var(--white); border-radius: 16px; padding: 22px; border: 1px solid var(--border-soft); margin-bottom: 18px; flex-shrink: 0; }
     .stepper { display: flex; justify-content: space-between; position: relative; padding: 0 10px; }
-    .stepper-track { position: absolute; top: 7px; left: 75px; right: 75px; height: 3px; background: var(--warm-beige); z-index: 1; }
+    .stepper-track { position: absolute; top: 7px; left: 75px; right: 75px; height: 2px; background: var(--bg-subtle); z-index: 1; }
     .stepper-progress { height: 100%; width: 0%; background: var(--cargo-orange); transition: width 500ms var(--ease-out); }
     .step { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 130px; text-align: center; }
-    .step-dot { width: 15px; height: 15px; border-radius: 50%; background: var(--white); border: 3px solid var(--border-strong); box-shadow: 0 0 0 4px var(--white); }
-    .stepper-loc-city { display: block; font-size: 0.78rem; font-weight: 700; color: var(--charcoal); text-transform: uppercase; }
-    .stepper-loc-country { display: block; font-size: 0.65rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; }
-    .stepper-transit { display: inline-block; font-size: 0.74rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; }
+    .step-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--white); border: 2.5px solid #D6CFC5; box-shadow: 0 0 0 4px var(--white); }
+    .stepper-loc-city { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-primary); }
+    .stepper-loc-country { display: block; font-size: 0.65rem; font-weight: 500; color: var(--text-muted); }
+    .stepper-transit { display: inline-block; font-size: 0.74rem; font-weight: 600; color: var(--brand-purple); }
     .stepper.state-booked .step:nth-child(2) .step-dot { border-color: var(--brand-purple); background: var(--brand-purple); }
     .stepper.state-transit .stepper-progress { background: var(--cargo-orange); }
     .stepper.state-transit .step:nth-child(2) .step-dot, .stepper.state-transit .step:nth-child(3) .step-dot { border-color: var(--cargo-orange); background: var(--cargo-orange); }
@@ -761,45 +751,45 @@
     .stepper.state-exception .stepper-progress { background: var(--deep-plum); }
     .stepper.state-exception .step .step-dot { border-color: var(--deep-plum); background: var(--deep-plum); }
 
-    .details-grid { display: grid; grid-template-columns: 290px 1fr; gap: 18px; flex: 1; overflow: hidden; min-height: 0; }
+    .details-grid { display: grid; grid-template-columns: 280px 1fr; gap: 18px; flex: 1; overflow: hidden; min-height: 0; }
     .left-info-panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; }
     .right-log-panel { display: flex; flex-direction: column; overflow: hidden; }
-    .section-heading { font-size: 0.72rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 8px 0; }
-    .info-group-card { background: var(--white); border: 1px solid var(--border-line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; }
-    .info-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px dashed var(--warm-beige); padding-bottom: 5px; }
+    .section-heading { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px 0; }
+    .info-group-card { background: var(--white); border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .info-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--bg-canvas); padding-bottom: 6px; }
     .info-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .info-row-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-    .info-row-value { font-weight: 700; color: var(--charcoal); font-size: 0.82rem; text-align: right; max-width: 62%; }
+    .info-row-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+    .info-row-value { font-weight: 600; color: var(--text-primary); font-size: 0.82rem; text-align: right; max-width: 62%; }
     .route-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .route-point { display: flex; flex-direction: column; }
-    .route-city { font-size: 0.84rem; font-weight: 700; color: var(--charcoal); text-transform: uppercase; }
-    .route-country { font-size: 0.65rem; font-weight: 700; color: var(--brand-purple); text-transform: uppercase; }
-    .carrier-card { background: var(--charcoal-blue); color: var(--white); border-radius: 8px; padding: 12px 14px; border-left: 4px solid var(--cargo-orange); }
-    .carrier-title { font-weight: 700; font-size: 0.84rem; color: var(--white); display: block; }
-    .carrier-docket { font-size: 0.76rem; color: var(--warm-beige); font-family: 'IBM Plex Mono', monospace; }
+    .route-city { font-size: 0.84rem; font-weight: 600; color: var(--text-primary); }
+    .route-country { font-size: 0.68rem; color: var(--text-muted); }
+    .carrier-card { background: var(--white); border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px 16px; }
+    .carrier-title { font-weight: 600; font-size: 0.84rem; color: var(--text-primary); display: block; }
+    .carrier-docket { font-size: 0.76rem; color: var(--brand-purple); font-family: 'JetBrains Mono', monospace; }
     .timeline-wrapper { flex: 1; overflow-y: auto; padding-right: 8px; }
     .timeline-row { display: grid; grid-template-columns: 76px 24px 1fr; }
     .time-col { text-align: right; padding-right: 8px; padding-top: 10px; }
-    .tl-date { display: block; font-size: 0.72rem; font-weight: 700; color: var(--charcoal); text-transform: uppercase; }
+    .tl-date { display: block; font-size: 0.72rem; font-weight: 600; color: var(--text-primary); }
     .tl-time { display: block; font-size: 0.68rem; color: var(--text-muted); }
     .node-col { position: relative; display: flex; justify-content: center; }
-    .node-line { position: absolute; top: 24px; bottom: -10px; width: 1.5px; background: var(--border-strong); }
+    .node-line { position: absolute; top: 24px; bottom: -10px; width: 1.5px; background: var(--bg-subtle); }
     .timeline-row:last-child .node-line { display: none; }
-    .node-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--white); border: 2px solid var(--brand-purple); position: relative; z-index: 2; margin-top: 13px; }
-    .timeline-row.newest .node-dot { background: var(--cargo-orange); border-color: var(--cargo-orange); width: 11px; height: 11px; margin-top: 12px; }
+    .node-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--white); border: 2px solid #C8B79E; position: relative; z-index: 2; margin-top: 14px; }
+    .timeline-row.newest .node-dot { background: var(--cargo-orange); border-color: var(--cargo-orange); width: 10px; height: 10px; margin-top: 13px; }
     .content-col { padding-left: 8px; padding-bottom: 14px; }
-    .tl-card { background: var(--white); border: 1px solid var(--border-line); border-radius: 8px; padding: 12px 14px; }
-    .timeline-row.newest .tl-card { border-color: var(--brand-purple); border-left: 3px solid var(--cargo-orange); }
-    .tl-status { font-weight: 700; font-size: 0.85rem; color: var(--brand-purple); margin-bottom: 3px; display: block; }
-    .tl-meta { font-size: 0.78rem; color: var(--charcoal); display: flex; flex-direction: column; gap: 3px; }
+    .tl-card { background: var(--white); border: 1px solid var(--border-soft); border-radius: 14px; padding: 12px 16px; }
+    .timeline-row.newest .tl-card { border-color: rgba(113, 50, 128, 0.25); }
+    .tl-status { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); margin-bottom: 3px; display: block; }
+    .tl-meta { font-size: 0.76rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 3px; }
 
     @media (max-width: 1100px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 900px) {
       .sidebar { display: none !important; }
-      .digital-header { padding: 14px 16px; }
-      .workspace-body { padding: 16px 16px 88px 16px; }
+      .top-bar { padding: 16px 20px; }
+      .workspace-body { padding: 8px 20px 88px 20px; }
       .details-grid { grid-template-columns: 1fr; overflow-y: auto; }
     }
   </style>
@@ -809,19 +799,20 @@
   <!-- Delivery Alert Modal -->
   <div class="delivery-popup-overlay" id="deliveryAlertOverlay">
     <div class="delivery-popup-card">
-      <svg class="alf-icon" style="width: 42px; height: 42px; color: var(--brand-purple); margin: 0 auto;" viewBox="0 0 24 24">
-        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-        <path class="accent-stroke" d="m9 12 2 2 4-4"/>
-      </svg>
+      <div class="stat-icon-circle ic-purple" style="width: 48px; height: 48px; border-radius: 50%; margin: 0 auto;">
+        <svg class="ui-icon" style="width: 24px; height: 24px;" viewBox="0 0 24 24">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+      </div>
       <h3 class="dp-title">Shipment Delivered</h3>
-      <p class="dp-desc">This waybill has been marked delivered at destination.</p>
+      <p class="dp-desc">This parcel has reached its destination.</p>
       <div class="dp-details-box">
         <div class="dp-row"><span class="dp-label">Waybill</span><span class="dp-value" id="alertAwb">---</span></div>
         <div class="dp-row"><span class="dp-label">Destination</span><span class="dp-value" id="alertDest">---</span></div>
       </div>
       <div class="dp-actions">
-        <button class="btn-dp-primary" onclick="notifyPartyAction()">Send WhatsApp Confirmation</button>
-        <button class="btn-dp-secondary" onclick="markDeliveryRead()">Dismiss Notice</button>
+        <button class="btn-dp-primary" onclick="notifyPartyAction()">Notify via WhatsApp</button>
+        <button class="btn-dp-secondary" onclick="markDeliveryRead()">Mark as Read</button>
       </div>
     </div>
   </div>
@@ -847,25 +838,25 @@
         </div>
         <div class="details-grid">
           <div class="left-info-panel">
-            <h4 class="section-heading">Waybill Summary</h4>
+            <h4 class="section-heading">Shipment Details</h4>
             <div class="info-group-card">
               <div id="lblRoute">
                 <div class="route-display">
                   <div class="route-point"><span class="route-city">---</span></div>
-                  <span style="color: var(--cargo-orange); font-weight: 700;">&rarr;</span>
+                  <span style="color: var(--cargo-orange);">&rarr;</span>
                   <div class="route-point" style="text-align: right;"><span class="route-city">---</span></div>
                 </div>
               </div>
             </div>
             <div class="info-group-card">
-              <div class="info-row"><span class="info-row-label">Booked Date</span><span class="info-row-value" id="lblDate">---</span></div>
+              <div class="info-row"><span class="info-row-label">Date</span><span class="info-row-value" id="lblDate">---</span></div>
               <div class="info-row"><span class="info-row-label">Shipper</span><span class="info-row-value" id="lblShipper">---</span></div>
               <div class="info-row"><span class="info-row-label">Consignee</span><span class="info-row-value" id="lblConsignee">---</span></div>
             </div>
             <div class="info-group-card">
               <div class="info-row"><span class="info-row-label">Weight</span><span class="info-row-value" id="lblWeightOnly">--- KG</span></div>
               <div class="info-row"><span class="info-row-label">Pieces</span><span class="info-row-value" id="lblPcsOnly">--- PCS</span></div>
-              <div class="info-row"><span class="info-row-label">Service Type</span><span class="info-row-value" id="lblType">---</span></div>
+              <div class="info-row"><span class="info-row-label">Type</span><span class="info-row-value" id="lblType">---</span></div>
             </div>
             <div class="carrier-card">
               <span class="carrier-title" id="lbl3rdPartyName">Internal Network</span>
@@ -873,7 +864,7 @@
             </div>
           </div>
           <div class="right-log-panel">
-            <h4 class="section-heading">Scan History</h4>
+            <h4 class="section-heading">Activity History</h4>
             <div class="timeline-wrapper"><div id="timelineContainer"></div></div>
           </div>
         </div>
@@ -885,7 +876,7 @@
   <div class="app-layout">
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <svg class="brand-lockup-svg" viewBox="0 0 340 108" width="180" height="56" xmlns="http://www.w3.org/2000/svg" aria-label="Al-Farha Cargo">
+        <svg class="brand-lockup-svg" viewBox="0 0 340 108" width="172" height="54" xmlns="http://www.w3.org/2000/svg" aria-label="Al-Farha Cargo">
           <text x="235" y="25" text-anchor="end" fill="#1E1E1C" font-family="Tahoma, Arial, sans-serif" font-weight="700" font-size="19" direction="rtl">الفرحة للنقل و الشحن</text>
           <text x="14" y="64" fill="#1E1E1C" font-family="Arial, sans-serif" font-weight="700" font-size="42" letter-spacing="-1">Al-Farha</text>
           <text x="188" y="64" fill="#EE7E05" font-family="Arial, sans-serif" font-weight="700" font-size="42" letter-spacing="-1">Cargo</text>
@@ -895,59 +886,48 @@
         </svg>
       </div>
 
-      <div class="sidebar-kicker">Workspace</div>
       <nav class="nav-menu">
         <div class="nav-item active" onclick="returnToDashboard()" title="Dashboard">
-          <svg class="alf-icon" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="7" height="9" rx="1.5"/>
-            <rect class="accent-stroke" x="14" y="3" width="7" height="5" rx="1.5"/>
-            <rect x="14" y="12" width="7" height="9" rx="1.5"/>
-            <rect x="3" y="16" width="7" height="5" rx="1.5"/>
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/>
+            <rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/>
           </svg>
-          <span class="nav-text">Dashboard</span>
+          <span class="nav-text">Overview</span>
         </div>
 
         <div class="nav-item" onclick="loadBookingForm()" title="New Booking">
-          <svg class="alf-icon" viewBox="0 0 24 24">
-            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-            <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
-            <path class="accent-stroke" d="M16 5.5 7.5 10.5"/>
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M12 5v14M5 12h14"/>
           </svg>
           <span class="nav-text">New Booking</span>
         </div>
 
-        <div class="nav-item" onclick="loadTransfers()" title="Branch Inventory">
-          <svg class="alf-icon" viewBox="0 0 24 24">
-            <path d="M17 3l4 4-4 4"/><path d="M3 7h18"/>
-            <path class="accent-stroke" d="M7 21l-4-4 4-4"/><path class="accent-stroke" d="M21 17H3"/>
+        <div class="nav-item" onclick="loadTransfers()" title="Inventory">
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/>
           </svg>
-          <span class="nav-text">Inventory &amp; Transfers</span>
+          <span class="nav-text">Transfers</span>
         </div>
 
         <div class="nav-item" onclick="loadStatusUpdate()" title="Update Status">
-          <svg class="alf-icon" viewBox="0 0 24 24">
-            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
-            <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
-            <line class="accent-stroke" x1="7" y1="12" x2="17" y2="12"/>
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M4 7V5a1 1 0 0 1 1-1h2M4 17v2a1 1 0 0 0 1 1h2M18 4h2a1 1 0 0 1 1 1v2M18 20h2a1 1 0 0 0 1-1v-2M7 12h10"/>
           </svg>
           <span class="nav-text">Scan &amp; Update</span>
         </div>
 
         <div class="nav-item" id="nav-consol" onclick="loadConsolidation()" title="Consolidations">
-          <svg class="alf-icon" viewBox="0 0 24 24">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-            <polyline class="accent-stroke" points="2 12 12 17 22 12"/>
-            <polyline points="2 17 12 22 22 17"/>
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/>
           </svg>
           <span class="nav-text">Consolidations</span>
         </div>
 
         <div class="nav-item d-none" id="nav-admin" onclick="loadAdminPanel()" title="Master Control">
-          <svg class="alf-icon" viewBox="0 0 24 24">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <circle class="accent-stroke" cx="12" cy="11" r="2.5"/>
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.77 1.02 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
           </svg>
-          <span class="nav-text">Master Control</span>
+          <span class="nav-text">Settings</span>
         </div>
       </nav>
 
@@ -957,56 +937,52 @@
           <span class="user-branch" id="navBranch">Branch</span>
         </div>
         <button class="btn-logout" onclick="logoutSystem()" title="Sign Out">
-          <svg class="alf-icon" style="width: 17px; height: 17px;" viewBox="0 0 24 24">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-            <polyline class="accent-stroke" points="16 17 21 12 16 7"/>
-            <line class="accent-stroke" x1="21" y1="12" x2="9" y2="12"/>
+          <svg class="ui-icon" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
         </button>
       </div>
     </aside>
 
     <main class="main-content" id="mainContent">
-      <!-- Digital Header in Charcoal Blue (#293B4A) per Brand Guide Page 1 -->
-      <header class="digital-header">
+      <!-- Serene, Airy Header -->
+      <header class="top-bar">
         <div class="header-left">
-          <span class="header-kicker">Al-Farha Cargo Operations</span>
-          <h1 class="page-title" id="welcomeMsg">Branch Overview</h1>
-          <p class="page-subtitle" id="quoteMsg">Courier &amp; Parcel Service</p>
+          <h1 class="page-title" id="welcomeMsg">Welcome back</h1>
+          <p class="page-subtitle" id="quoteMsg">Al-Farha Cargo • Courier &amp; Parcel Service</p>
         </div>
 
         <div class="top-actions">
           <div class="compact-search">
-            <svg class="alf-icon" style="width: 16px; height: 16px; color: var(--brand-purple);" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="7"/><line class="accent-stroke" x1="20" y1="20" x2="16.2" y2="16.2"/>
+            <svg class="ui-icon" style="color: var(--text-muted);" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
             </svg>
-            <input type="text" id="searchInput" class="search-input-widget" placeholder="Track AWB or Docket No..." onkeypress="if(event.key === 'Enter') executeSearch()">
+            <input type="text" id="searchInput" class="search-input-widget" placeholder="Track waybill or docket..." onkeypress="if(event.key === 'Enter') executeSearch()">
             <button class="btn-search-hero" id="searchBtn" onclick="executeSearch()">Track</button>
             <div id="searchAlert" class="error-alert"></div>
           </div>
 
           <button class="btn-new-booking" onclick="loadBookingForm()">
-            <svg class="alf-icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
-              <line class="accent-stroke" x1="12" y1="5" x2="12" y2="19"/><line class="accent-stroke" x1="5" y1="12" x2="19" y2="12"/>
+            <svg class="ui-icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+              <path d="M12 5v14M5 12h14"/>
             </svg>
             <span>New Booking</span>
           </button>
 
           <div class="notification-wrapper" id="notifWrapper">
-            <button class="btn-bell" id="bellBtn" onclick="toggleNotifications(event)" title="Delivery Notices">
-              <svg class="alf-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path class="accent-stroke" d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            <button class="btn-bell" id="bellBtn" onclick="toggleNotifications(event)" title="Notifications">
+              <svg class="ui-icon" viewBox="0 0 24 24">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
               <span class="bell-badge" id="bellBadge">0</span>
             </button>
             <div class="notif-dropdown" id="notifDropdown">
               <div class="notif-header">
-                <span>Delivered Notices</span>
-                <span id="notifCountLabel" style="font-size: 0.72rem; color: var(--charcoal);">0 New</span>
+                <span>Recent Deliveries</span>
+                <span id="notifCountLabel" style="font-size: 0.75rem; color: var(--brand-purple);">0 New</span>
               </div>
               <div class="notif-list" id="notifList">
-                <div class="notif-empty">No unread delivery notices</div>
+                <div class="notif-empty">All caught up</div>
               </div>
             </div>
           </div>
@@ -1014,90 +990,87 @@
       </header>
 
       <div class="workspace-body">
-        <!-- 5 Stationery Summary Cards (Click any card to filter the register below) -->
+        <!-- 5 Simple, Elegant Summary Cards -->
         <div class="stats-grid">
           <div class="stat-card" id="cardFilter-ALL" onclick="filterTableByCategory('ALL')">
             <div class="stat-top">
-              <span class="stat-kicker">01 / Total Booked</span>
-              <svg class="alf-icon" viewBox="0 0 24 24">
-                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-                <polyline class="accent-stroke" points="3.3 7 12 12 20.7 7"/>
-              </svg>
+              <span class="stat-label">Total Booked</span>
+              <div class="stat-icon-circle ic-purple">
+                <svg class="ui-icon" viewBox="0 0 24 24">
+                  <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+                </svg>
+              </div>
             </div>
             <h2 class="stat-value" id="statTotal">-</h2>
-            <span class="stat-foot">All recorded waybills</span>
           </div>
 
           <div class="stat-card active-filter" id="cardFilter-TRANSIT" onclick="filterTableByCategory('TRANSIT')">
             <div class="stat-top">
-              <span class="stat-kicker">02 / In-Transit</span>
-              <svg class="alf-icon" viewBox="0 0 24 24">
-                <rect x="1" y="4" width="14" height="12" rx="1.5"/>
-                <polygon class="accent-stroke" points="15 8 19 8 22 11 22 16 15 16 15 8"/>
-                <circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="18.5" r="2"/>
-              </svg>
+              <span class="stat-label">In-Transit</span>
+              <div class="stat-icon-circle ic-slate">
+                <svg class="ui-icon" viewBox="0 0 24 24">
+                  <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+                </svg>
+              </div>
             </div>
             <h2 class="stat-value" id="statTransit">-</h2>
-            <span class="stat-foot">Active on linehaul &amp; hubs</span>
           </div>
 
           <div class="stat-card" id="cardFilter-DELIVERED" onclick="filterTableByCategory('DELIVERED')">
             <div class="stat-top">
-              <span class="stat-kicker">03 / Delivered</span>
-              <svg class="alf-icon" viewBox="0 0 24 24">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline class="accent-stroke" points="22 4 12 14.01 9 11.01"/>
-              </svg>
+              <span class="stat-label">Delivered</span>
+              <div class="stat-icon-circle ic-orange">
+                <svg class="ui-icon" viewBox="0 0 24 24">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </div>
             </div>
             <h2 class="stat-value" id="statDelivered">-</h2>
-            <span class="stat-foot">Completed consignments</span>
           </div>
 
           <div class="stat-card" id="cardFilter-EXCEPTION" onclick="filterTableByCategory('EXCEPTION')">
             <div class="stat-top">
-              <span class="stat-kicker">04 / Exceptions</span>
-              <svg class="alf-icon" viewBox="0 0 24 24">
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                <line class="accent-stroke" x1="12" y1="9" x2="12" y2="13"/>
-                <circle class="accent-fill" cx="12" cy="17" r="1"/>
-              </svg>
+              <span class="stat-label">Exceptions</span>
+              <div class="stat-icon-circle ic-plum">
+                <svg class="ui-icon" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
             </div>
             <h2 class="stat-value" id="statExceptions">-</h2>
-            <span class="stat-foot">Customs holds &amp; returns</span>
           </div>
 
           <div class="stat-card" id="pendingCardWrapper" onclick="loadTransfers()">
             <div class="stat-top">
-              <span class="stat-kicker">05 / Pending Inbound</span>
-              <svg class="alf-icon" viewBox="0 0 24 24">
-                <polyline class="accent-stroke" points="8 12 12 16 16 12"/>
-                <line class="accent-stroke" x1="12" y1="3" x2="12" y2="16"/>
-                <path d="M20 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/>
-              </svg>
+              <span class="stat-label">Pending Inbound</span>
+              <div class="stat-icon-circle ic-purple">
+                <svg class="ui-icon" viewBox="0 0 24 24">
+                  <path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+                </svg>
+              </div>
             </div>
             <h2 class="stat-value" id="statPending">-</h2>
-            <span class="stat-foot">Awaiting branch receipt &rarr;</span>
           </div>
         </div>
 
-        <!-- Waybill Register (Defaults to In-Transit view) -->
-        <div class="register-sheet">
+        <!-- Clean, Serene Shipments Table (Defaults to In-Transit) -->
+        <div class="table-card">
           <div class="sheet-header">
             <div class="sheet-title-group">
-              <h3 class="sheet-title">Waybill Register</h3>
+              <h3 class="sheet-title">Shipments</h3>
               <div class="filter-pills">
                 <button class="filter-pill-btn active" id="filterBtn-TRANSIT" onclick="filterTableByCategory('TRANSIT')">In-Transit</button>
-                <button class="filter-pill-btn" id="filterBtn-ALL" onclick="filterTableByCategory('ALL')">All Shipments</button>
+                <button class="filter-pill-btn" id="filterBtn-ALL" onclick="filterTableByCategory('ALL')">All</button>
                 <button class="filter-pill-btn" id="filterBtn-DELIVERED" onclick="filterTableByCategory('DELIVERED')">Delivered</button>
                 <button class="filter-pill-btn" id="filterBtn-EXCEPTION" onclick="filterTableByCategory('EXCEPTION')">Exceptions</button>
               </div>
             </div>
 
             <div class="table-inline-filter">
-              <svg class="alf-icon" style="width: 15px; height: 15px; color: var(--brand-purple);" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="7"/><line class="accent-stroke" x1="20" y1="20" x2="16.2" y2="16.2"/>
+              <svg class="ui-icon" style="width: 15px; height: 15px; color: var(--text-muted);" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
               </svg>
-              <input type="text" id="inlineTableSearch" placeholder="Search waybill or destination..." oninput="renderRecentShipmentsTable()">
+              <input type="text" id="inlineTableSearch" placeholder="Filter by waybill or destination..." oninput="renderRecentShipmentsTable()">
             </div>
           </div>
 
@@ -1105,14 +1078,14 @@
             <table class="minimal-table">
               <thead>
                 <tr>
-                  <th>Waybill No.</th>
+                  <th>Waybill</th>
                   <th>Destination</th>
-                  <th>Current Status</th>
-                  <th style="text-align: right;">Details</th>
+                  <th>Status</th>
+                  <th style="text-align: right;"></th>
                 </tr>
               </thead>
               <tbody id="recentTableBody">
-                <tr><td colspan="4" style="text-align: center; padding: 36px; color: var(--text-muted);">Loading branch waybills...</td></tr>
+                <tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading shipments...</td></tr>
               </tbody>
             </table>
           </div>
